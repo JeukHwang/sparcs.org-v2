@@ -22,7 +22,7 @@ export default new VueRouter({
         { name: 'Status', path: '/status', component: Status },
         { name: 'Issues', path: '/issues', component: Issues },
         { name: 'Issue', path: '/issue/:id/:slug', component: Issue },
-        { name: 'IssueMake', path: '/issues/make', component: IssueMake },
+        { name: 'IssueMake', path: '/issue/make', component: IssueMake },
         { name: 'NotFound', path: '*', component: NotFound },
 
     ],

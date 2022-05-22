@@ -1,6 +1,14 @@
 <template>
     <div class="App__page">
+        <router-link class="App__back" to="/issues">
+            <IconArrow class="App__back__icon" />
+            {{ $t('go-back') }}
+        </router-link>
+        <h1 class="App__title">New Post</h1>
         <MarkdownEditor></MarkdownEditor>
+        <AppLink button submit>
+            {{ $t('Make new issue') }}
+        </AppLink>
     </div>
 </template>
 
@@ -17,15 +25,31 @@
 </style>
 
 <script>
+import AppLink from "@/components/AppLink";
 import MarkdownEditor from "@/components/MarkdownEditor";
+import IconArrow from "@/images/IconArrow.svg?inline";
 export default {
     data() {
         return {
         };
     },
 
+    methods: {
+        fetchData: function () {
+            axios.put('/post', { content: "", service: "" })
+                .then(function (response) {
+                    console.log(response);
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        }
+    },
+
     components: {
-        MarkdownEditor
+        IconArrow,
+        MarkdownEditor,
+        AppLink
     }
-}
+};
 </script>

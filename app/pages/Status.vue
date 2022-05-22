@@ -1,53 +1,34 @@
 <template>
-    <div class="issues App__page">
+    <div class="App__page">
         <router-link class="App__back" to="/">
-            <IconArrow class="App__back__icon" />
-            {{ $t('go-back') }}
+            <IconArrow class="App__back__icon" />{{ $t('go-back') }}
         </router-link>
 
-        <h1 class="App__title">Status</h1>
-
-        <p class="issues__desc">
-            {{ $t('desc') }}
-        </p>
+        <div class="Info__titles">
+            <h1 class="Info__title">Status</h1>
+            <a href="./issues">
+                <h1 class="Info__title">Issues</h1>
+            </a>
+        </div>
+        <p class="Info__desc">{{ $t('status-desc') }}</p>
 
         <div class="ColumnWrapper">
             <div class="ColumnWrapper__column" v-for="column in columns">
-                <div class="Card" v-for="service in column" :key="service.name">
-                    <div class="Service">
-                        <div class="Service__status">
-                            <img class="Service__logo" :src="service.image">
-
-                        </div>
-
-                        <!-- <div class="Service__about">
-                            <div class="Service__links">
-                                <div v-if="service.tags">
-                                    <span class="Service__tag" :class="{
-                                        'Service__tag__operational': tag === 'Operational',
-                                        'Service__tag__inoperational': tag === 'Inoperational',
-                                        'Service__tag__development': tag === 'Development',
-                                    }" v-for="tag in service.tags" :key="tag">● {{ $t(tag) }}</span>
-                                </div>
-                                <AppLink class="Service__link" :to="service.link" v-if="service.link">
-                                    {{ $t('visit') }}
-                                </AppLink>
-                                <AppLink class="Service__link" :to="service.link" v-if="service.link">
-                                    {{ $t('issue') }}
-                                </AppLink>
-                            </div>
-                        </div> -->
-                        <div class="Service__about" v-if="service.tags">
-                            <span class="Service__tag" :class="{
-                                'Service__tag__operational': tag === 'Operational',
-                                'Service__tag__inoperational': tag === 'Inoperational',
-                                'Service__tag__development': tag === 'Development',
-                            }" v-for="tag in service.tags" :key="tag">● {{ $t(tag) }}</span>
-                        </div>
+                <div class="Card Service" v-for="service in column" :key="service.name">
+                    <div class="Service__status">
+                        <a :href="service.link"> <img class="Service__logo" :src="service.image"> </a>
+                    </div>
+                    <div class="Service__about" v-if="service.tags">
+                        <span class="Service__tag" :class="'Service__tag__' + tag.toLowerCase()"
+                            v-for="tag in service.tags" :key="tag" :force="force"> ● {{ $t(tag) }} </span>
                     </div>
                 </div>
             </div>
         </div>
+
+        <!-- <h1 class="App__title">Issues</h1>
+        <p class="desc">{{ $t('issues-desc') }}</p> -->
+
     </div>
 </template>
 
@@ -55,15 +36,31 @@
     ko:
         search: '검색'
         go-back: '뒤로가기'
-        desc: '스팍스에서 제공하는 서비스의 상태를 실시간으로 확인할 수 있습니다.'
+        status-desc: '스팍스에서 제공하는 서비스의 상태를 실시간으로 확인할 수 있습니다.'
+        issues-desc: '스팍스에서 제공하는 서비스에 대한 정보를 확인할 수 있습니다.'
         reverse: '역순'
         delete-issue: '세미나 삭제'
 </i18n>
 
 <style scoped>
-.issues {
+* {
     font-family: var(--theme-font);
 }
+
+.Info {
+    &__desc {
+        color: var(--grey-200);
+    }
+
+    &__titles {
+        display: block;
+    }
+
+    &__title {
+        display: inline-block;
+    }
+}
+
 
 .ColumnWrapper {
     display: flex;
@@ -219,8 +216,6 @@ import ServiceNewAra from "@/images/ServiceNewAra";
 import ServiceOTL from "@/images/ServiceOTL";
 import ServiceSSO from "@/images/ServiceSSO";
 import ServiceZabo from "@/images/ServiceZabo";
-import api from "@/src/api";
-import formatDate from "@/src/formatDate";
 
 
 
@@ -264,7 +259,6 @@ export default {
                     image: ServiceKono,
                     link: 'https://kono.sparcs.org',
                     github: ['kono'],
-                    tags: ['Development', "Bug??"]
                 },
 
                 {
@@ -281,7 +275,6 @@ export default {
                     image: ServiceOTL,
                     link: 'https://otl.kaist.ac.kr',
                     github: ['otlplus'],
-                    tags: ["Operational", "Woowang!"]
                 },
 
                 {
@@ -307,19 +300,54 @@ export default {
                     link: 'https://zabo.sparcs.org',
                     github: ['zabo-front-reactjs', 'zabo-server-nodejs']
                 }
-            ].map(service => {
-                if (!service.tags) {
-                    service.tags = ["Inoperational"];
-                }
-                return service;
-            })
+            ]
+                .map(service => {
+                    if (!service.tags) {
+                        service.tags = [""];
+                    }
+                    return service;
+                }),
+            force: 0
         };
+    },
+
+    mounted() {
+        console.log('Mounted');
+        this.services.forEach((service) => {
+            let name = service.name.toLowerCase();
+            console.log(name, service.tags);
+            if (!service.tags) { service.tags = [""]; }
+            let eventSource = new EventSource('http://192.168.0.130:8080/status/random');
+            eventSource.onopen = (event) => {
+                console.log("Connected");
+            };
+
+            eventSource.onmessage = (event) => {
+                let data = JSON.parse(event.data);
+                console.log(name, data);
+                if (data.operational) {
+                    service.tags = ["Operational"];
+                    // updateTag(name, ["Operational"]);
+                } else {
+                    service.tags = ["Inoperational", data.msg];
+                    // updateTag(name, ["Inoperational", data.msg]);
+                }
+                // service.tags = ["QWERTY"];
+                updateForce();
+            };
+
+            eventSource.onerror = (event) => {
+                eventSource.close();
+            };
+        });
     },
 
     computed: {
         columns() {
             // TODO : is the order written in the code hard-coding priority? otherwise let's sort by service name
             // this.services.sort((a, b) => (a.name < b.name) ? -1 : ((a.name > b.name) ? 1 : 0));
+
+            // TODO : Can I used flex-wrap to solve it?
             const cols = 2;
             let columns = [];
             let mid = Math.ceil(this.services.length / cols);
@@ -331,22 +359,13 @@ export default {
     },
 
     methods: {
-        notify(name, result) {
-            this.$store.dispatch('toast/addToastFromApi', { name, result });
+        updateForce() {
+            this.force += 1;
         },
-        stringifyDate(date) {
-            return formatDate(date);
-        },
-        async deleteissue(issue) {
-            if (!confirm(`정말 '${issue.title}'를 삭제하시겠어요?`)) {
-                return;
-            }
-            const result = await api(`/issues/${issue._id}`, 'delete');
-            await this.notify(this.$t('delete-issue'), result);
-        },
-
-        getGithubLink(repository) {
-            return `https://github.com/sparcs-kaist/${repository}`;
+        updateTag(serviceName, tags) {
+            this.$set(this.services[serviceName].tags, tags, true);
+            this.$set(this.services, this.services, true);
+            // this.services[serviceName].tags = tags;
         }
     },
 
@@ -360,29 +379,6 @@ export default {
         IconSortDate,
         IconSortTitle,
         TheSeminarUpload
-    },
-
-    async beforeRouteEnter(to, from, next) {
-        const { issues } = await api('/issues');
-        issues.forEach(issue => {
-            issue.date = new Date(issue.date);
-            return issue;
-        });
-
-        next(vm => {
-            vm.issues = issues;
-        });
-    },
-
-    async mounted() {
-        const { issues } = await api('/issues');
-        issues.forEach(issue => {
-            issue.date = new Date(issue.date);
-            return issue;
-        });
-
-        this.issues = issues;
-        this.year = this.years[0];
     },
 };
 </script>

@@ -5,11 +5,16 @@
             {{ $t('go-back') }}
         </router-link>
 
-        <h1 class="App__title">Issues</h1>
+        <div class="Info__titles">
+            <a href="./status">
+                <h1 class="Info__title">Status</h1>
+            </a>
+            <h1 class="Info__title">Issues</h1>
+        </div>
 
-        <p class="issues__desc">
-            {{ $t('desc') }}
-        </p>
+        <!-- <h1 class="App__title">Issues</h1> -->
+
+        <p class="Info__desc"> {{ $t('desc') }} </p>
 
         <div class="issues__criteria">
             <div class="issues__query">
@@ -67,7 +72,7 @@
         </div>
 
         <div class="NewPost">
-            <AppLink button @click="upload">
+            <AppLink to="./issue/make">
                 {{ $t('Make new issue') }}
             </AppLink>
         </div>
@@ -86,6 +91,24 @@
 </i18n>
 
 <style scoped>
+* {
+    font-family: var(--theme-font);
+}
+
+.Info {
+    &__desc {
+        color: var(--grey-200);
+    }
+
+    &__titles {
+        display: block;
+    }
+
+    &__title {
+        display: inline-block;
+    }
+}
+
 .issues {
     &__desc {
         font-family: var(--theme-font);
@@ -240,7 +263,6 @@
         }
     }
 }
-
 </style>
 
 <script>
@@ -253,6 +275,7 @@ import IconSortDate from "@/images/IconSortDate?inline";
 import IconSortTitle from "@/images/IconSortTitle?inline";
 import api from "@/src/api";
 import formatDate from "@/src/formatDate";
+import axios from 'axios';
 
 export default {
     data() {
@@ -359,16 +382,30 @@ export default {
         notify(name, result) {
             this.$store.dispatch('toast/addToastFromApi', { name, result });
         },
+
         stringifyDate(date) {
             return formatDate(date);
         },
+
         async deleteissue(issue) {
             if (!confirm(`정말 '${issue.title}'를 삭제하시겠어요?`)) {
                 return;
             }
             const result = await api(`/issues/${issue._id}`, 'delete');
             await this.notify(this.$t('delete-issue'), result);
-        }
+        },
+
+        fetchData: function () {
+
+            axios.get('/posts', { content: "", service: "" })
+                .then(function (response) {
+                    response;
+                    console.log(response);
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        },
     },
 
     async beforeRouteEnter(to, from, next) {
