@@ -1,70 +1,75 @@
 <template>
-    <div class="Seminars App__page">
+    <div class="issues App__page">
         <router-link class="App__back" to="/">
             <IconArrow class="App__back__icon" />
             {{ $t('go-back') }}
         </router-link>
 
-        <h1 class="App__title">Seminars</h1>
+        <h1 class="App__title">Issues</h1>
 
-        <p class="Seminars__desc">
+        <p class="issues__desc">
             {{ $t('desc') }}
         </p>
 
-        <div class="Seminars__criteria">
-            <div class="Seminars__query">
+        <div class="issues__criteria">
+            <div class="issues__query">
                 <AppInput v-model="query" bind :placeholder="$t('search')" />
-                <div class="Seminars__sorting">
-                    <label class="Seminars__sorting-button">
-                        <input class="Seminars__sorting-input" type="radio" value="date" v-model="sortMode">
-                        <IconSortDate class="Seminars__sorting-icon" />
+                <div class="issues__sorting">
+                    <label class="issues__sorting-button">
+                        <input class="issues__sorting-input" type="radio" value="date" v-model="sortMode">
+                        <IconSortDate class="issues__sorting-icon" />
                     </label>
 
-                    <label class="Seminars__sorting-button">
-                        <input class="Seminars__sorting-input" type="radio" value="title" v-model="sortMode">
-                        <IconSortTitle class="Seminars__sorting-icon" />
+                    <label class="issues__sorting-button">
+                        <input class="issues__sorting-input" type="radio" value="title" v-model="sortMode">
+                        <IconSortTitle class="issues__sorting-icon" />
                     </label>
-                    <AppCheckbox class="Seminars__sorting-reverse" v-model="sortReverse" bind>
+                    <AppCheckbox class="issues__sorting-reverse" v-model="sortReverse" bind>
                         {{ $t('reverse') }}
                     </AppCheckbox>
                 </div>
             </div>
 
-            <div class="Seminars__years">
-                <button class="Seminars__year" :class="{ 'Seminars__year--active': year === n }" @click="year = n"
+            <div class="issues__items">
+                <button class="issues__item" :class="{ 'issues__item--active': year === n }" @click="year = n"
                     v-for="n in years" v-if="!query">
-
+                    {{ n }}
+                </button>
+            </div>
+            <div class="issues__items">
+                <button class="issues__item" :class="{ 'issues__item--active': service === n }" @click="service = n"
+                    v-for="n in services" v-if="!query">
                     {{ n }}
                 </button>
             </div>
         </div>
 
-        <div class="Seminars__seminars">
-            <div class="Seminar" v-for="seminar in seminarsFiltered" :key="seminar._id">
-                <h2 class="Seminar__title"> {{ seminar.title }} </h2>
-                <div class="Seminar__metadata">
-                    <span class="Seminar__speaker"> by {{ seminar.speaker }} </span>
+        <div class="issues__issues">
+            <div class="issue" v-for="issue in issuesFiltered" :key="issue._id">
+                <h2 class="issue__title"> {{ issue.title }} </h2>
+                <div class="issue__metadata">
+                    <span class="issue__speaker"> by {{ issue.speaker }} </span>
                     /
-                    <span class="Seminar__date"> at {{ stringifyDate(seminar.date) }} </span>
+                    <span class="issue__date"> at {{ stringifyDate(issue.date) }} </span>
                     <template v-if="admin">
                         /
-                        <span class="Seminar__id">
-                            {{ seminar._id }}
+                        <span class="issue__id">
+                            {{ issue._id }}
                         </span>
                     </template>
                 </div>
-                <div class="Seminar__files">
-                    <a class="Seminar__file" v-for="source in seminar.sources" :href="source.url" target="_blank"
-                        rel="noopener">
-                        {{ source.name }}
-                    </a>
-                </div>
-                <template v-if="seminar.canEdit">
-                    <div class="Seminar__edit">
-                        <a @click="deleteSeminar(seminar)" class="Seminar__delete"> {{ $t('delete-seminar') }} </a>
+                <template v-if="issue.canEdit">
+                    <div class="issue__edit">
+                        <a @click="deleteissue(issue)" class="issue__delete"> {{ $t('delete-issue') }} </a>
                     </div>
                 </template>
             </div>
+        </div>
+
+        <div class="NewPost">
+            <AppLink button @click="upload">
+                {{ $t('Make new issue') }}
+            </AppLink>
         </div>
 
         <TheSeminarUpload v-if="authState" />
@@ -75,25 +80,25 @@
     ko:
         search: '검색'
         go-back: '뒤로가기'
-        desc: '스팍스에서 진행되었던 세미나의 발표자료입니다.'
+        desc: '스팍스에서 제공하는 서비스에 대한 정보를 확인할 수 있습니다.'
         reverse: '역순'
-        delete-seminar: '세미나 삭제'
+        delete-issue: '글 삭제'
 </i18n>
 
 <style scoped>
-.Seminars {
+.issues {
     &__desc {
         font-family: var(--theme-font);
         color: var(--grey-200);
     }
 
-    &__years {
+    &__items {
         display: flex;
         flex-wrap: wrap;
         margin-top: 10px;
     }
 
-    &__year {
+    &__item {
         cursor: pointer;
         /* background: var(--grey-800); */
         background: transparent;
@@ -170,7 +175,7 @@
     }
 }
 
-.Seminar {
+.issue {
     border-left: 1px solid var(--grey-600);
     padding: 10px 0;
     padding-left: 20px;
@@ -235,11 +240,13 @@
         }
     }
 }
+
 </style>
 
 <script>
 import AppCheckbox from "@/components/AppCheckbox";
 import AppInput from "@/components/AppInput";
+import AppLink from "@/components/AppLink";
 import TheSeminarUpload from "@/components/TheSeminarUpload";
 import IconArrow from "@/images/IconArrow?inline";
 import IconSortDate from "@/images/IconSortDate?inline";
@@ -247,15 +254,15 @@ import IconSortTitle from "@/images/IconSortTitle?inline";
 import api from "@/src/api";
 import formatDate from "@/src/formatDate";
 
-
 export default {
     data() {
         return {
-            seminars: [],
+            issues: [],
             sortMode: 'date',
             sortReverse: true,
             query: '',
-            year: (new Date()).getFullYear()
+            year: (new Date()).getFullYear(),
+            service: "All"
         };
     },
 
@@ -267,24 +274,24 @@ export default {
             return this.$store.state.auth.user.admin;
         },
 
-        seminarsSorted() {
+        issuesSorted() {
             let sorted;
 
             switch (this.sortMode) {
                 case 'date':
-                    sorted = this.seminars.sort(
+                    sorted = this.issues.sort(
                         (v1, v2) => v1.date.getTime() - v2.date.getTime()
                     );
                     break;
 
                 case 'title':
-                    sorted = this.seminars.sort(
+                    sorted = this.issues.sort(
                         (v1, v2) => v2.title.localeCompare(v1.title)
                     );
                     break;
 
                 default:
-                    sorted = this.seminars;
+                    sorted = this.issues;
             }
 
             if (this.sortReverse)
@@ -293,17 +300,17 @@ export default {
             return sorted;
         },
 
-        seminarsFiltered() {
+        issuesFiltered() {
             if (!this.query) {
-                return this.seminarsSorted.filter(seminar => seminar.date.getFullYear() === this.year);
+                return this.issuesSorted.filter(issue => issue.date.getFullYear() === this.year);
             }
 
             const lowerCaseQuery = this.query.toLowerCase();
-            return this.seminarsSorted.filter(seminar => {
+            return this.issuesSorted.filter(issue => {
                 return (
-                    (seminar.title || '').toLowerCase().includes(lowerCaseQuery) ||
-                    (seminar.speaker || '').toLowerCase().includes(lowerCaseQuery) ||
-                    seminar.sources.some(source => {
+                    (issue.title || '').toLowerCase().includes(lowerCaseQuery) ||
+                    (issue.speaker || '').toLowerCase().includes(lowerCaseQuery) ||
+                    issue.sources.some(source => {
                         return source.name.toLowerCase().includes(lowerCaseQuery);
                     })
                 );
@@ -312,7 +319,7 @@ export default {
 
         yearStart() {
             const maxYear = (new Date()).getFullYear();
-            const yearStart = this.seminars.reduce((prev, curr) => {
+            const yearStart = this.issues.reduce((prev, curr) => {
                 const currYear = curr.date.getFullYear();
                 if (currYear < prev)
                     return currYear;
@@ -323,7 +330,7 @@ export default {
         },
 
         yearEnd() {
-            return this.seminars.reduce((prev, curr) => {
+            return this.issues.reduce((prev, curr) => {
                 const currYear = curr.date.getFullYear();
                 if (currYear > prev)
                     return currYear;
@@ -338,6 +345,11 @@ export default {
                 .reverse();
         },
 
+        services() {
+            return ["All", ...new Set(this.issues.map(issue => issue.service))]
+                .sort();
+        },
+
         authState() {
             return this.$store.getters['auth/authState'];
         }
@@ -350,35 +362,35 @@ export default {
         stringifyDate(date) {
             return formatDate(date);
         },
-        async deleteSeminar(seminar) {
-            if (!confirm(`정말 '${seminar.title}'를 삭제하시겠어요?`)) {
+        async deleteissue(issue) {
+            if (!confirm(`정말 '${issue.title}'를 삭제하시겠어요?`)) {
                 return;
             }
-            const result = await api(`/seminar/${seminar._id}`, 'delete');
-            await this.notify(this.$t('delete-seminar'), result);
+            const result = await api(`/issues/${issue._id}`, 'delete');
+            await this.notify(this.$t('delete-issue'), result);
         }
     },
 
     async beforeRouteEnter(to, from, next) {
-        const { seminars } = await api('/seminar');
-        seminars.forEach(seminar => {
-            seminar.date = new Date(seminar.date);
-            return seminar;
+        const { issues } = await api('/issues');
+        issues.forEach(issue => {
+            issue.date = new Date(issue.date);
+            return issue;
         });
 
         next(vm => {
-            vm.seminars = seminars;
+            vm.issues = issues;
         });
     },
 
     async mounted() {
-        const { seminars } = await api('/seminar');
-        seminars.forEach(seminar => {
-            seminar.date = new Date(seminar.date);
-            return seminar;
+        const { issues } = await api('/issues');
+        issues.forEach(issue => {
+            issue.date = new Date(issue.date);
+            return issue;
         });
 
-        this.seminars = seminars;
+        this.issues = issues;
         this.year = this.years[0];
     },
 
@@ -388,7 +400,8 @@ export default {
         IconArrow,
         IconSortDate,
         IconSortTitle,
-        TheSeminarUpload
+        TheSeminarUpload,
+        AppLink
     }
 };
 </script>

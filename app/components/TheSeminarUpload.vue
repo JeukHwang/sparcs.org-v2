@@ -80,220 +80,221 @@
 </i18n>
 
 <style scoped>
-    .SeminarUpload {
-        &__title {
-            font-family: var(--theme-font);
-            color: var(--grey-200);
-        }
+.SeminarUpload {
+    &__title {
+        font-family: var(--theme-font);
+        color: var(--grey-200);
+    }
 
-        &__hint {
-            font-family: var(--theme-font);
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--grey-200);
-            margin: 0;
-            margin-top: 20px;
-            margin-bottom: 10px;
-        }
+    &__hint {
+        font-family: var(--theme-font);
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--grey-200);
+        margin: 0;
+        margin-top: 20px;
+        margin-bottom: 10px;
+    }
 
-        &__fill {
-            flex: 1;
-        }
+    &__fill {
+        flex: 1;
+    }
 
-        &__row {
-            display: flex;
-            margin: 5px 0;
+    &__row {
+        display: flex;
+        margin: 5px 0;
 
-            & > * {
-                margin: 5px;
-                flex-wrap: wrap;
-            }
-        }
-
-        &__files {
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            font-family: var(--theme-font);
-            color: var(--grey-200);
-        }
-
-        &__file {
-            width: 100%;
-            margin-left: 5px;
-        }
-
-        &__input {
-            width: 6rem;
-            opacity: .001;
-            padding: 10px 15px;
-        }
-
-        &__label {
-            cursor: default;
-            position: relative;
-        }
-
-        &__label-text {
-            pointer-events: none;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-
-        &__submit-row {
-            /* justify-content: flex-end; */
-        }
-
-        &__status {
-            color: var(--grey-200);
-            font-family: var(--theme-font);
-        }
-
-        &__progress {
-            background: var(--theme-500);
-            height: 3px;
-            margin-top: 10px;
+        &>* {
+            margin: 5px;
+            flex-wrap: wrap;
         }
     }
 
-    .File__delete, .SeminarUpload__label {
-        margin: 5px 5px;
+    &__files {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        font-family: var(--theme-font);
+        color: var(--grey-200);
+    }
 
-        border: none;
-        outline: none;
+    &__file {
+        width: 100%;
+        margin-left: 5px;
+    }
+
+    &__input {
+        width: 6rem;
+        opacity: .001;
+        padding: 10px 15px;
+    }
+
+    &__label {
+        cursor: default;
+        position: relative;
+    }
+
+    &__label-text {
+        pointer-events: none;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    &__submit-row {
+        /* justify-content: flex-end; */
+    }
+
+    &__status {
         color: var(--grey-200);
         font-family: var(--theme-font);
-        font-size: 1.05rem;
-
-        border-radius: 5px;
-        cursor: pointer;
-        background: var(--grey-780);
-        transition: background .4s ease;
-
-        &:hover {
-            background: var(--grey-800);
-        }
     }
 
-    .File {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-
-        &__delete {
-            padding: 8px 12px;
-        }
-
-        &__title {
-            white-space: nowrap;
-            flex: 1;
-            width: 0;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
+    &__progress {
+        background: var(--theme-500);
+        height: 3px;
+        margin-top: 10px;
     }
+}
+
+.File__delete,
+.SeminarUpload__label {
+    margin: 5px 5px;
+
+    border: none;
+    outline: none;
+    color: var(--grey-200);
+    font-family: var(--theme-font);
+    font-size: 1.05rem;
+
+    border-radius: 5px;
+    cursor: pointer;
+    background: var(--grey-780);
+    transition: background .4s ease;
+
+    &:hover {
+        background: var(--grey-800);
+    }
+}
+
+.File {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    &__delete {
+        padding: 8px 12px;
+    }
+
+    &__title {
+        white-space: nowrap;
+        flex: 1;
+        width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
 </style>
 
 <script>
-    import api from "@/src/api";
-    import formatDate from "@/src/formatDate";
+import AppInput from "@/components/AppInput";
+import AppLink from "@/components/AppLink";
+import api from "@/src/api";
+import formatDate from "@/src/formatDate";
 
-    import AppInput from "@/components/AppInput";
-    import AppLink from "@/components/AppLink";
 
-    export default {
-        data() {
-            return {
-                title: '',
-                speaker: '',
-                date: formatDate(new Date()),
-                files: [],
-                linkName: '',
-                linkUrl: '',
-                links: [],
-                uploading: false,
-                progress: 0
+export default {
+    data() {
+        return {
+            title: '',
+            speaker: '',
+            date: formatDate(new Date()),
+            files: [],
+            linkName: '',
+            linkUrl: '',
+            links: [],
+            uploading: false,
+            progress: 0
+        };
+    },
+
+    methods: {
+        addFile() {
+            const files = [...this.$refs.upload.files].map(file => {
+                file.id = Math.random().toString(36).slice(2);
+                return file;
+            });
+
+            this.files = this.files.concat(files).slice(0, 16);
+            this.$refs.upload.value = '';
+        },
+
+        deleteFile(id) {
+            this.files = this.files.filter(v => v.id !== id);
+        },
+
+        addLink() {
+            this.links.push({
+                id: Math.random().toString(36).slice(2),
+                name: this.linkName,
+                url: this.linkUrl
+            });
+        },
+
+        deleteLink(id) {
+            this.links = this.links.filter(v => v.id !== id);
+        },
+
+        async upload() {
+            const options = {
+                onUploadProgress: e => {
+                    this.progress = Math.floor((e.loaded * 100) / e.total);
+                }
             };
-        },
 
-        methods: {
-            addFile() {
-                const files = [...this.$refs.upload.files].map(file => {
-                    file.id = Math.random().toString(36).slice(2);
-                    return file;
-                });
+            const linksEncoded = this.links.reduce((prev, curr) => {
+                prev[curr.name] = curr.url;
+                return prev;
+            }, {});
 
-                this.files = this.files.concat(files).slice(0, 16);
-                this.$refs.upload.value = '';
-            },
+            const formData = new FormData();
+            formData.append('title', this.title);
+            formData.append('speaker', this.speaker);
+            formData.append('date', new Date(this.date).getTime());
+            formData.append('links', JSON.stringify(linksEncoded));
+            this.files.forEach(file => {
+                formData.append('content', file);
+            });
 
-            deleteFile(id) {
-                this.files = this.files.filter(v => v.id !== id);
-            },
+            this.uploading = true;
+            this.progress = 0;
 
-            addLink() {
-                this.links.push({
-                    id: Math.random().toString(36).slice(2),
-                    name: this.linkName,
-                    url: this.linkUrl
-                });
-            },
+            const result = await api('/seminar', 'post', formData, options);
+            this.$store.dispatch('toast/addToastFromApi', {
+                result,
+                name: this.$t('seminar-upload')
+            });
 
-            deleteLink(id) {
-                this.links = this.links.filter(v => v.id !== id);
-            },
-
-            async upload() {
-                const options = {
-                    onUploadProgress: e => {
-                        this.progress = Math.floor((e.loaded * 100) / e.total);
-                    }
-                };
-
-                const linksEncoded = this.links.reduce((prev, curr) => {
-                    prev[curr.name] = curr.url;
-                    return prev;
-                }, {});
-
-                const formData = new FormData();
-                formData.append('title', this.title);
-                formData.append('speaker', this.speaker);
-                formData.append('date', new Date(this.date).getTime());
-                formData.append('links', JSON.stringify(linksEncoded));
-                this.files.forEach(file => {
-                    formData.append('content', file);
-                });
-
-                this.uploading = true;
-                this.progress = 0;
-
-                const result = await api('/seminar', 'post', formData, options);
-                this.$store.dispatch('toast/addToastFromApi', {
-                    result,
-                    name: this.$t('seminar-upload')
-                });
-
-                this.uploading = false;
-                this.files = [];
-                this.links = [];
-                this.title = '';
-                this.speaker = '';
-                this.linkName = '';
-                this.linkUrl = '';
-            }
-        },
-
-        computed: {
-            progressStyle() {
-                return { width: `${this.progress}%` };
-            }
-        },
-
-        components: {
-            AppInput,
-            AppLink
+            this.uploading = false;
+            this.files = [];
+            this.links = [];
+            this.title = '';
+            this.speaker = '';
+            this.linkName = '';
+            this.linkUrl = '';
         }
-    };
+    },
+
+    computed: {
+        progressStyle() {
+            return { width: `${this.progress}%` };
+        }
+    },
+
+    components: {
+        AppInput,
+        AppLink
+    }
+};
 </script>
