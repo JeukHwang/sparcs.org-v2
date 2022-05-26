@@ -73,7 +73,7 @@
 
         <div class="NewPost">
             <AppLink to="./issue/make">
-                {{ $t('Make new issue') }}
+                {{ $t('make-issue') }}
             </AppLink>
         </div>
 
@@ -88,6 +88,7 @@
         desc: '스팍스에서 제공하는 서비스에 대한 정보를 확인할 수 있습니다.'
         reverse: '역순'
         delete-issue: '글 삭제'
+        make-issue: '글 생성'
 </i18n>
 
 <style scoped>
@@ -275,7 +276,6 @@ import IconSortDate from "@/images/IconSortDate?inline";
 import IconSortTitle from "@/images/IconSortTitle?inline";
 import api from "@/src/api";
 import formatDate from "@/src/formatDate";
-import axios from 'axios';
 
 export default {
     data() {
@@ -312,7 +312,6 @@ export default {
                         (v1, v2) => v2.title.localeCompare(v1.title)
                     );
                     break;
-
                 default:
                     sorted = this.issues;
             }
@@ -394,24 +393,13 @@ export default {
             const result = await api(`/issues/${issue._id}`, 'delete');
             await this.notify(this.$t('delete-issue'), result);
         },
-
-        fetchData: function () {
-
-            axios.get('/posts', { content: "", service: "" })
-                .then(function (response) {
-                    response;
-                    console.log(response);
-                })
-                .catch(function (error) {
-                    console.log(error);
-                });
-        },
     },
 
     async beforeRouteEnter(to, from, next) {
-        const { issues } = await api('/issues');
+        const issues = (await api('/post')) || [];
+        console.log('is', issues);
         issues.forEach(issue => {
-            issue.date = new Date(issue.date);
+            issue.date = new Date(issue.createdAt);
             return issue;
         });
 
@@ -421,9 +409,10 @@ export default {
     },
 
     async mounted() {
-        const { issues } = await api('/issues');
+        const issues = (await api('/post')) || [];
+        console.log('is', issues);
         issues.forEach(issue => {
-            issue.date = new Date(issue.date);
+            issue.date = new Date(issue.createdAt);
             return issue;
         });
 

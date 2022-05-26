@@ -20,7 +20,7 @@
                     </div>
                     <div class="Service__about" v-if="service.tags">
                         <span class="Service__tag" :class="'Service__tag__' + tag.toLowerCase()"
-                            v-for="tag in service.tags" :key="tag" :force="force"> ● {{ $t(tag) }} </span>
+                            v-for="tag in service.tags" :key="tag" :force="force"> ● {{ tag }} </span>
                     </div>
                 </div>
             </div>
@@ -85,7 +85,7 @@
     /* background: var(--theme-400); */
     font-family: var(--theme-font);
     margin: 20px 0px;
-    padding: 20px 20px;
+    padding: 15px;
     border-radius: 5px;
     box-sizing: border-box;
     box-shadow: var(--shadow-500);
@@ -104,9 +104,9 @@
     color: var(--grey-200);
 
     &__logo {
-        width: 100%;
+        /* width: 100%; */
         max-width: 200px;
-        height: 8.5vw;
+        height: 80%;
         max-height: 50px;
         object-fit: contain;
         object-position: center left;
@@ -114,8 +114,9 @@
     }
 
     &__status {
-        flex: 1;
-        width: 0;
+        width: 40%;
+        /* flex: 1; */
+        /* width: 0; */
         padding: 0 0;
         /* width: 0;
         display: flex;
@@ -124,8 +125,9 @@
     }
 
     &__about {
-        flex: 1;
-        width: 0;
+        width: 60%;
+        /* flex: 3; */
+        /* width: 0; */
         margin-left: 10px;
         display: flex;
         flex-direction: column;
@@ -306,7 +308,8 @@ export default {
                         service.tags = [""];
                     }
                     return service;
-                }),
+                })
+                ,
             force: 0
         };
     },
@@ -317,7 +320,8 @@ export default {
             let name = service.name.toLowerCase();
             console.log(name, service.tags);
             if (!service.tags) { service.tags = [""]; }
-            let eventSource = new EventSource('http://192.168.0.130:8080/status/random');
+            // Hard-coding
+            let eventSource = new EventSource('http://3.39.230.113:3000/status/random');
             eventSource.onopen = (event) => {
                 console.log("Connected");
             };
@@ -325,7 +329,8 @@ export default {
             eventSource.onmessage = (event) => {
                 let data = JSON.parse(event.data);
                 console.log(name, data);
-                if (data.operational) {
+                console.log('NAME', name, typeof data.operational);
+                if (data.opertional) {
                     service.tags = ["Operational"];
                     // updateTag(name, ["Operational"]);
                 } else {
@@ -333,7 +338,7 @@ export default {
                     // updateTag(name, ["Inoperational", data.msg]);
                 }
                 // service.tags = ["QWERTY"];
-                updateForce();
+                this.updateForce();
             };
 
             eventSource.onerror = (event) => {
@@ -352,15 +357,16 @@ export default {
             let columns = [];
             let mid = Math.ceil(this.services.length / cols);
             for (let col = 0; col < cols; col++) {
-                columns.push(this.services.slice(col * mid, col * mid + mid));
+                columns.push(this.services.slice(col * mid, (col+1) * mid));
             }
+            console.log(columns);
             return columns;
         }
     },
 
     methods: {
         updateForce() {
-            this.force += 1;
+            this.force = (this.force+1) % 100;
         },
         updateTag(serviceName, tags) {
             this.$set(this.services[serviceName].tags, tags, true);
