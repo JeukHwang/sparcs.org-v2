@@ -20,6 +20,7 @@
     display: flex;
     justify-content: space-between;
     width: 100%;
+    padding: 30px 0px;
     /* background-color: white; */
 
     &__view {
