@@ -24,8 +24,9 @@ const request = async (url, method = 'get', body = null, options = null) => {
 
     switch (url) {
         case "/auth":
-            const { data } = await authApi(configuration);
-            return data;
+            // const { data } = await authApi(configuration);
+            // return data;
+            return {};
         // case "/issues":
         //     return {
         //         "ok": true, "issues": [

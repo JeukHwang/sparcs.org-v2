@@ -7,3 +7,5 @@ export default function formatDate(dateObj) {
 
     return `${dateObj.getFullYear()}-${month}-${day}`;
 }
+
+// date.toISOString().split('T')[0]

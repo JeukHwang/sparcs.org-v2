@@ -4,31 +4,24 @@
             <IconArrow class="App__back__icon" />{{ $t('go-back') }}
         </router-link>
 
-        <div class="Info__titles">
-            <h1 class="Info__title">Status</h1>
-            <a href="./issues">
-                <h1 class="Info__title">Issues</h1>
-            </a>
+        <div class="Tab__container">
+            <h1 class="Tab__item">Status</h1>
+            <h1 class="Tab__item"><a href="./issues">Issues</a></h1>
         </div>
         <p class="Info__desc">{{ $t('status-desc') }}</p>
 
-        <div class="ColumnWrapper">
-            <div class="ColumnWrapper__column" v-for="column in columns">
-                <div class="Card Service" v-for="service in column" :key="service.name">
-                    <div class="Service__status">
-                        <a :href="service.link"> <img class="Service__logo" :src="service.image"> </a>
-                    </div>
-                    <div class="Service__about" v-if="service.tags">
-                        <span class="Service__tag" :class="'Service__tag__' + tag.toLowerCase()"
-                            v-for="tag in service.tags" :key="tag" :force="force"> ● {{ tag }} </span>
-                    </div>
+        <div class="Grid__container">
+            <div class="Grid__item Service" v-for="service in services" :key="service.name">
+                <div class="Service__status">
+                    <a class="Service__status__a" :href="service.link"> <img class="Service__status__logo"
+                            :src="service.image"> </a>
+                </div>
+                <div class="Service__about" v-if="service.tags">
+                    <span class="Service__about__tag" :class="'Service__about__tag__' + tag.toLowerCase()"
+                        v-for="tag in service.tags" :key="tag" :force="force"> ● {{ tag }} </span>
                 </div>
             </div>
         </div>
-
-        <!-- <h1 class="App__title">Issues</h1>
-        <p class="desc">{{ $t('issues-desc') }}</p> -->
-
     </div>
 </template>
 
@@ -47,156 +40,114 @@
     font-family: var(--theme-font);
 }
 
-.Info {
-    &__desc {
-        color: var(--grey-200);
-    }
-
-    &__titles {
-        display: block;
-    }
-
-    &__title {
-        display: inline-block;
-    }
+a {
+    text-decoration: none;
 }
 
-
-.ColumnWrapper {
-    display: flex;
-
-    &__column {
-        flex: 1;
-        width: 0;
-        margin: 0 10px;
-
-        &:first-child {
-            margin-left: 0;
-        }
-
-        &:last-child {
-            margin-right: 0;
-        }
-    }
-}
-
-.Card {
-    color: var(--theme-foreground-900);
-    /* background: var(--theme-400); */
-    font-family: var(--theme-font);
-    margin: 20px 0px;
-    padding: 15px;
-    border-radius: 5px;
-    box-sizing: border-box;
-    box-shadow: var(--shadow-500);
-
-    &:first-child {
-        margin-top: 0;
+.Grid {
+    &__container {
+        width: 100%;
+        display: grid;
+        gap: 20px 40px;
+        grid-template-columns: repeat(auto-fill, minmax(min(400px, 100%), 1fr));
+        place-content: stretch stretch;
+        justify-items: center;
     }
 
-    &:last-child {
-        margin-bottom: 0;
+    &__item {
+        width: min(100%, 80vw);
+        min-width: 300px;
+        height: max(fit-content, 10vh);
+        color: var(--theme-foreground-900);
+        font-family: var(--theme-font);
+        margin: 20px 0px;
+        padding: 30px;
+        border-radius: 5px;
+        box-sizing: border-box;
+        box-shadow: var(--shadow-500);
     }
 }
 
 .Service {
     display: flex;
     color: var(--grey-200);
-
-    &__logo {
-        /* width: 100%; */
-        max-width: 200px;
-        height: 80%;
-        max-height: 50px;
-        object-fit: contain;
-        object-position: center left;
-        padding: 0px auto;
-    }
+    border-spacing: 10px;
+    gap: 0px 10px;
 
     &__status {
-        width: 40%;
-        /* flex: 1; */
-        /* width: 0; */
-        padding: 0 0;
-        /* width: 0;
+        flex: 6;
+        /* width: 100%; */
+        height: 100%;
+        margin: 0;
+        padding: 0;
         display: flex;
-        flex-direction: column;
-        vertical-align: middle; */
+
+        justify-content: flex-start;
+        align-items: center;
+
+        &__a,
+        &__logo {
+            height: 50px;
+        }
     }
 
     &__about {
-        width: 60%;
-        /* flex: 3; */
+        width: 50%;
+        flex: 4;
         /* width: 0; */
-        margin-left: 10px;
+        /* margin-left: 10px; */
         display: flex;
         flex-direction: column;
         justify-content: space-evenly;
-    }
 
-    &__desc {
-        margin: 0;
-        font-family: var(--theme-font);
-    }
+        &__tag {
+            max-width: 100%;
+            display: flex;
+            align-items: center;
 
-    &__links {
-        width: min-content;
-        margin-top: 10px;
-    }
+            font-family: var(--theme-font);
+            color: var(--grey-650);
 
-    &__link {
-        height: 1.4rem;
-        vertical-align: middle;
+            &__operational {
+                color: green;
+            }
 
-        &__icon {
-            stroke: none !important;
-        }
-    }
+            &__inoperational {
+                color: red;
+            }
 
-    &__tags {
-        display: flex;
-        flex-direction: column;
-    }
-
-    &__tag {
-        max-width: 100%;
-        display: flex;
-        align-items: center;
-
-        font-family: var(--theme-font);
-        color: var(--grey-650);
-
-        &__operational {
-            color: green;
-        }
-
-        &__inoperational {
-            color: red;
-        }
-
-        &__development {
-            color: orange;
+            &__development {
+                color: orange;
+            }
         }
     }
 }
 
-@media (max-width: 360px) {
+
+.Tab {
+    &__container {
+        display: flex;
+    }
+
+    &__item {
+        align-items: center;
+        justify-content: center;
+        padding: 10px 15px;
+        margin: 5px 5px;
+        border: none;
+        outline: none;
+        color: var(--grey-200);
+        border-radius: 5px;
+
+        > a {
+            text-decoration: none;
+        }
+    }
+}
+
+@media (max-width: 500px) {
     .Service {
         flex-direction: column;
-
-        &__logo {
-            width: 30vw;
-            height: 10vw;
-            margin-right: 0;
-        }
-
-        &__status {
-            /* margin-bottom: 20px; */
-        }
-
-        &__about {
-            width: 100%;
-        }
     }
 }
 </style>
@@ -309,7 +260,7 @@ export default {
                     }
                     return service;
                 })
-                ,
+            ,
             force: 0
         };
     },
@@ -328,16 +279,11 @@ export default {
 
             eventSource.onmessage = (event) => {
                 let data = JSON.parse(event.data);
-                console.log(name, data);
-                console.log('NAME', name, typeof data.operational);
                 if (data.opertional) {
                     service.tags = ["Operational"];
-                    // updateTag(name, ["Operational"]);
                 } else {
                     service.tags = ["Inoperational", data.msg];
-                    // updateTag(name, ["Inoperational", data.msg]);
                 }
-                // service.tags = ["QWERTY"];
                 this.updateForce();
             };
 
@@ -357,7 +303,7 @@ export default {
             let columns = [];
             let mid = Math.ceil(this.services.length / cols);
             for (let col = 0; col < cols; col++) {
-                columns.push(this.services.slice(col * mid, (col+1) * mid));
+                columns.push(this.services.slice(col * mid, (col + 1) * mid));
             }
             console.log(columns);
             return columns;
@@ -366,7 +312,7 @@ export default {
 
     methods: {
         updateForce() {
-            this.force = (this.force+1) % 100;
+            this.force = (this.force + 1) % 100;
         },
         updateTag(serviceName, tags) {
             this.$set(this.services[serviceName].tags, tags, true);

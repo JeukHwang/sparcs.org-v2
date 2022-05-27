@@ -21,7 +21,7 @@ export default new VueRouter({
         { name: 'Seminars', path: '/seminars', component: Seminars },
         { name: 'Status', path: '/status', component: Status },
         { name: 'Issues', path: '/issues', component: Issues },
-        { name: 'Issue', path: '/issue/:id/:slug', component: Issue },
+        { name: 'Issue', path: '/issue/:id', component: Issue },
         { name: 'IssueMake', path: '/issue/make', component: IssueMake },
         { name: 'NotFound', path: '*', component: NotFound },
 

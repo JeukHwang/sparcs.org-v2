@@ -22,7 +22,6 @@ export default {
     data() {
         return {
             postID: this.$route.params.id,
-            postSlug: this.$route.params.slug
         };
     },
 
@@ -33,8 +32,7 @@ export default {
                 this.$router.push('/404');
                 return "# No such post";
             } else {
-                return ` # Title : ${this.postSlug} 
-## ID : ${this.postID}
+                return `# ID : ${this.postID}
 - Help
 - Me
 - Plz`;

@@ -63,7 +63,7 @@ window resize시에 grid one column으로 바꾸기
 
 안쪽 margin vs 바깥쪽 padding 차이?
 
-mobile 환경 고려 UI
+`mobile 환경 고려 UI`
 
 https://stackoverflow.com/questions/42199956/how-to-implement-debounce-in-vue2
 https://jsfiddle.net/chrisvfritz/0dzvcf4d/
@@ -72,4 +72,8 @@ https://studiomeal.com/archives/197
 
 https://codepen.io/kowlor/pen/wgLEvj
 
-markdown scroll sync
+markdown scroll sync - too hard
+
+VERY GOOD refence : https://studiomeal.com/archives/533
+
+very good 구문 : `grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));`

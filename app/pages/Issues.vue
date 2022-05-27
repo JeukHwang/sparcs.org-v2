@@ -5,14 +5,10 @@
             {{ $t('go-back') }}
         </router-link>
 
-        <div class="Info__titles">
-            <a href="./status">
-                <h1 class="Info__title">Status</h1>
-            </a>
-            <h1 class="Info__title">Issues</h1>
+        <div class="Tab__container">
+            <h1 class="Tab__item"><a href="./status">Status</a></h1>
+            <h1 class="Tab__item">Issues</h1>
         </div>
-
-        <!-- <h1 class="App__title">Issues</h1> -->
 
         <p class="Info__desc"> {{ $t('desc') }} </p>
 
@@ -21,10 +17,9 @@
                 <AppInput v-model="query" bind :placeholder="$t('search')" />
                 <div class="issues__sorting">
                     <label class="issues__sorting-button">
-                        <input class="issues__sorting-input" type="radio" value="date" v-model="sortMode">
+                        <input class="issues__sorting-input" type="radio" value="data" v-model="sortMode">
                         <IconSortDate class="issues__sorting-icon" />
                     </label>
-
                     <label class="issues__sorting-button">
                         <input class="issues__sorting-input" type="radio" value="title" v-model="sortMode">
                         <IconSortTitle class="issues__sorting-icon" />
@@ -42,40 +37,37 @@
                 </button>
             </div>
             <div class="issues__items">
-                <button class="issues__item" :class="{ 'issues__item--active': service === n }" @click="service = n"
-                    v-for="n in services" v-if="!query">
-                    {{ n }}
+                <button class="issues__item" :class="{ 'issues__item--active': service === s }" @click="service = s"
+                    v-for="s in services" v-if="!query">
+                    {{ s }}
                 </button>
             </div>
         </div>
 
         <div class="issues__issues">
-            <div class="issue" v-for="issue in issuesFiltered" :key="issue._id">
-                <h2 class="issue__title"> {{ issue.title }} </h2>
-                <div class="issue__metadata">
-                    <span class="issue__speaker"> by {{ issue.speaker }} </span>
-                    /
-                    <span class="issue__date"> at {{ stringifyDate(issue.date) }} </span>
-                    <template v-if="admin">
-                        /
-                        <span class="issue__id">
-                            {{ issue._id }}
-                        </span>
-                    </template>
-                </div>
-                <template v-if="issue.canEdit">
-                    <div class="issue__edit">
-                        <a @click="deleteissue(issue)" class="issue__delete"> {{ $t('delete-issue') }} </a>
+            <div class="issue" v-for="issue in issuesFiltered" :key="issue.id">
+                <a :href="getIssueURL(issue)">
+                    <h2 class="issue__title"> {{ issue.title }} </h2>
+                    <div class="issue__metadata">
+                        <span> by {{ issue.service }}</span> /
+                        <span> created at {{ stringifyDate(issue.createdAt) }} </span> /
+                        <span> last updated at {{ stringifyDate(issue.updatedAt) }} </span>
+                        <template v-if="admin">
+                            / <span> id {{ issue.id }} </span>
+                        </template>
                     </div>
-                </template>
+                    <template v-if="issue.canEdit">
+                        <div class="issue__edit">
+                            <a @click="deleteissue(issue)" class="issue__delete"> {{ $t('delete-issue') }} </a>
+                        </div>
+                    </template>
+                </a>
             </div>
         </div>
 
-        <div class="NewPost">
-            <AppLink to="./issue/make">
-                {{ $t('make-issue') }}
-            </AppLink>
-        </div>
+        <AppLink to="./issue/make">
+            {{ $t('make-issue') }}
+        </AppLink>
 
         <TheSeminarUpload v-if="authState" />
     </div>
@@ -264,6 +256,27 @@
         }
     }
 }
+
+.Tab {
+    &__container {
+        display: flex;
+    }
+
+    &__item {
+        align-items: center;
+        justify-content: center;
+        padding: 10px 15px;
+        margin: 5px 5px;
+        border: none;
+        outline: none;
+        color: var(--grey-200);
+        border-radius: 5px;
+
+        >a {
+            text-decoration: none;
+        }
+    }
+}
 </style>
 
 <script>
@@ -275,7 +288,7 @@ import IconArrow from "@/images/IconArrow?inline";
 import IconSortDate from "@/images/IconSortDate?inline";
 import IconSortTitle from "@/images/IconSortTitle?inline";
 import api from "@/src/api";
-import formatDate from "@/src/formatDate";
+import formatDate from "../src/formatDate";
 
 export default {
     data() {
@@ -291,47 +304,33 @@ export default {
 
     computed: {
         admin() {
-            if (!this.$store.state.auth.user)
-                return false;
-
+            if (!this.$store.state.auth.user) { return false; }
             return this.$store.state.auth.user.admin;
         },
 
         issuesSorted() {
             let sorted;
-
             switch (this.sortMode) {
                 case 'date':
-                    sorted = this.issues.sort(
-                        (v1, v2) => v1.date.getTime() - v2.date.getTime()
-                    );
+                    sorted = this.issues.sort((v1, v2) => v1.date.getTime() - v2.date.getTime());
                     break;
-
                 case 'title':
-                    sorted = this.issues.sort(
-                        (v1, v2) => v2.title.localeCompare(v1.title)
-                    );
+                    sorted = this.issues.sort((v1, v2) => v2.title.localeCompare(v1.title));
                     break;
                 default:
                     sorted = this.issues;
             }
-
-            if (this.sortReverse)
-                sorted = sorted.reverse();
-
+            if (this.sortReverse) { sorted = sorted.reverse(); }
             return sorted;
         },
 
         issuesFiltered() {
-            if (!this.query) {
-                return this.issuesSorted.filter(issue => issue.date.getFullYear() === this.year);
-            }
-
+            if (!this.query) { return this.issuesSorted.filter(issue => issue.date.getFullYear() === this.year); }
             const lowerCaseQuery = this.query.toLowerCase();
             return this.issuesSorted.filter(issue => {
                 return (
                     (issue.title || '').toLowerCase().includes(lowerCaseQuery) ||
-                    (issue.speaker || '').toLowerCase().includes(lowerCaseQuery) ||
+                    (issue.service || '').toLowerCase().includes(lowerCaseQuery) ||
                     issue.sources.some(source => {
                         return source.name.toLowerCase().includes(lowerCaseQuery);
                     })
@@ -339,42 +338,22 @@ export default {
             });
         },
 
-        yearStart() {
-            const maxYear = (new Date()).getFullYear();
-            const yearStart = this.issues.reduce((prev, curr) => {
-                const currYear = curr.date.getFullYear();
-                if (currYear < prev)
-                    return currYear;
-
-                return prev;
-            }, maxYear);
-            return yearStart;
-        },
-
-        yearEnd() {
-            return this.issues.reduce((prev, curr) => {
-                const currYear = curr.date.getFullYear();
-                if (currYear > prev)
-                    return currYear;
-
-                return prev;
-            }, this.yearStart);
-        },
-
         years() {
-            return [...Array(this.yearEnd - this.yearStart + 1)]
-                .map((_, i) => i + this.yearStart)
-                .reverse();
+            const yearList = this.issues.map(issue => issue.date.getFullYear());
+            const yearStart = Math.min(this.year, ...yearList);
+            const yearEnd = Math.max(this.year, ...yearList);
+            console.log(yearStart, yearEnd);
+            console.log([...Array(yearEnd - yearStart + 1)]);
+            return [...Array(yearEnd - yearStart + 1)].map((_, i) => i + yearStart).reverse();
         },
 
         services() {
-            return ["All", ...new Set(this.issues.map(issue => issue.service))]
-                .sort();
+            return ["All", ...new Set(this.issues.map(issue => issue.service))].sort();
         },
 
         authState() {
             return this.$store.getters['auth/authState'];
-        }
+        },
     },
 
     methods: {
@@ -387,35 +366,35 @@ export default {
         },
 
         async deleteissue(issue) {
-            if (!confirm(`정말 '${issue.title}'를 삭제하시겠어요?`)) {
-                return;
-            }
-            const result = await api(`/issues/${issue._id}`, 'delete');
+            if (!confirm(`정말 '${issue.title}'를 삭제하시겠어요?`)) { return; }
+            const result = await api(`/post/${issue.id}`, 'delete');
             await this.notify(this.$t('delete-issue'), result);
         },
+
+        getIssueURL(issue) {
+            return `/issue/${issue.id}`;
+        }
     },
 
     async beforeRouteEnter(to, from, next) {
-        const issues = (await api('/post')) || [];
-        console.log('is', issues);
+        const issues = await api('/post');
+        console.log({ issues });
         issues.forEach(issue => {
-            issue.date = new Date(issue.createdAt);
-            return issue;
+            issue.createdAt = new Date(issue.createdAt);
+            issue.updatedAt = new Date(issue.updatedAt);
+            issue.date = issue.updatedAt;
         });
-
-        next(vm => {
-            vm.issues = issues;
-        });
+        next(vm => { vm.issues = issues; });
     },
 
     async mounted() {
-        const issues = (await api('/post')) || [];
-        console.log('is', issues);
+        const issues = await api('/post');
+        console.log({ issues });
         issues.forEach(issue => {
-            issue.date = new Date(issue.createdAt);
-            return issue;
+            issue.createdAt = new Date(issue.createdAt);
+            issue.updatedAt = new Date(issue.updatedAt);
+            issue.date = issue.updatedAt;
         });
-
         this.issues = issues;
         this.year = this.years[0];
     },
