@@ -45,13 +45,13 @@
 </style>
 
 <script>
-    import api from "@/src/api";
-    import store from "@/src/store";
-
     import TheActivities from "@/components/TheActivities";
-    import TheLanding from "@/components/TheLanding";
-    import TheMembers from "@/components/TheMembers";
-    import TheServices from "@/components/TheServices";
+import TheLanding from "@/components/TheLanding";
+import TheMembers from "@/components/TheMembers";
+import TheServices from "@/components/TheServices";
+import api from "@/src/api";
+import store from "@/src/store";
+
 
     export default {
         data() {

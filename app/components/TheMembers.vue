@@ -85,9 +85,8 @@
 </style>
 
 <script>
-    import api from "@/src/api";
-
     import AppLink from "@/components/AppLink";
+
 
     export default {
         props: {

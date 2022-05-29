@@ -3,11 +3,7 @@
         <router-link class="App__back" to="/">
             <IconArrow class="App__back__icon" />{{ $t('go-back') }}
         </router-link>
-
-        <div class="Tab__container">
-            <h1 class="Tab__item">Status</h1>
-            <h1 class="Tab__item"><a href="./issues">Issues</a></h1>
-        </div>
+        <h1 class="Tab">Status | <a class="Tab__unselected" href="./issues">Issues</a></h1>
         <p class="Info__desc">{{ $t('status-desc') }}</p>
 
         <div class="Grid__container">
@@ -28,7 +24,7 @@
 <i18n>
     ko:
         search: '검색'
-        go-back: '뒤로가기'
+        go-back: '돌아가기'
         status-desc: '스팍스에서 제공하는 서비스의 상태를 실시간으로 확인할 수 있습니다.'
         issues-desc: '스팍스에서 제공하는 서비스에 대한 정보를 확인할 수 있습니다.'
         reverse: '역순'
@@ -125,23 +121,19 @@ a {
 
 
 .Tab {
-    &__container {
-        display: flex;
-    }
+    align-items: center;
+    justify-content: center;
+    padding: 10px 15px;
+    margin: 5px 5px;
+    border: none;
+    outline: none;
+    color: var(--grey-200);
+    border-radius: 5px;
 
-    &__item {
-        align-items: center;
-        justify-content: center;
-        padding: 10px 15px;
-        margin: 5px 5px;
-        border: none;
-        outline: none;
-        color: var(--grey-200);
-        border-radius: 5px;
-
-        > a {
-            text-decoration: none;
-        }
+    &__unselected{
+        text-decoration: none;
+        color: grey;
+        font-size: 0.8em;
     }
 }
 
@@ -282,7 +274,7 @@ export default {
                 if (data.opertional) {
                     service.tags = ["Operational"];
                 } else {
-                    service.tags = ["Inoperational", data.msg];
+                    service.tags = ["Inoperational", data.msg, "로그인 비작동", "DB 저장용량 부족", "일부 Android 기기 속도 지연"];
                 }
                 this.updateForce();
             };

@@ -227,12 +227,12 @@
 </style>
 
 <script>
-    import api from "@/src/api";
-
     import NavigationHome from "@/images/NavigationHome?inline";
-    import NavigationMember from "@/images/NavigationMember?inline";
-    import NavigationSeminar from "@/images/NavigationSeminar?inline";
-    import SparcsLogo from "@/images/SparcsLogo?inline";
+import NavigationMember from "@/images/NavigationMember?inline";
+import NavigationSeminar from "@/images/NavigationSeminar?inline";
+import SparcsLogo from "@/images/SparcsLogo?inline";
+import api from "@/src/api";
+
 
     export default {
         computed: {

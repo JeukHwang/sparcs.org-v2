@@ -5,10 +5,7 @@
             {{ $t('go-back') }}
         </router-link>
 
-        <div class="Tab__container">
-            <h1 class="Tab__item"><a href="./status">Status</a></h1>
-            <h1 class="Tab__item">Issues</h1>
-        </div>
+        <h1 class="Tab"><a class="Tab__unselected" href="./status">Status</a> | Issues</h1>
 
         <p class="Info__desc"> {{ $t('desc') }} </p>
 
@@ -17,7 +14,7 @@
                 <AppInput v-model="query" bind :placeholder="$t('search')" />
                 <div class="issues__sorting">
                     <label class="issues__sorting-button">
-                        <input class="issues__sorting-input" type="radio" value="data" v-model="sortMode">
+                        <input class="issues__sorting-input" type="radio" value="date" v-model="sortMode">
                         <IconSortDate class="issues__sorting-icon" />
                     </label>
                     <label class="issues__sorting-button">
@@ -49,23 +46,18 @@
                 <a :href="getIssueURL(issue)">
                     <h2 class="issue__title"> {{ issue.title }} </h2>
                     <div class="issue__metadata">
-                        <span> by {{ issue.service }}</span> /
-                        <span> created at {{ stringifyDate(issue.createdAt) }} </span> /
-                        <span> last updated at {{ stringifyDate(issue.updatedAt) }} </span>
+                        <span> {{ issue.service }} 작성 </span> /
+                        <span> {{ stringifyDate(issue.createdAt) }} 입력 </span> /
+                        <span> {{ stringifyDate(issue.updatedAt) }} 수정 </span>
                         <template v-if="admin">
-                            / <span> id {{ issue.id }} </span>
+                            / <span> {{ issue.id }} 번호 </span>
                         </template>
                     </div>
-                    <template v-if="issue.canEdit">
-                        <div class="issue__edit">
-                            <a @click="deleteissue(issue)" class="issue__delete"> {{ $t('delete-issue') }} </a>
-                        </div>
-                    </template>
                 </a>
             </div>
         </div>
 
-        <AppLink to="./issue/make">
+        <AppLink to="/issue/make">
             {{ $t('make-issue') }}
         </AppLink>
 
@@ -76,16 +68,19 @@
 <i18n>
     ko:
         search: '검색'
-        go-back: '뒤로가기'
+        go-back: '돌아가기'
         desc: '스팍스에서 제공하는 서비스에 대한 정보를 확인할 수 있습니다.'
         reverse: '역순'
-        delete-issue: '글 삭제'
         make-issue: '글 생성'
 </i18n>
 
 <style scoped>
 * {
     font-family: var(--theme-font);
+}
+
+a {
+    text-decoration: none;
 }
 
 .Info {
@@ -217,64 +212,22 @@
             padding-left: 0;
         }
     }
-
-    &__files {
-        margin-top: 15px;
-    }
-
-    &__file {
-        cursor: pointer;
-        display: inline-block;
-        padding: 5px 12px;
-        margin: 5px 10px;
-        border-radius: 5px;
-        background: var(--grey-800);
-        color: var(--grey-400);
-        font-family: var(--theme-font);
-        text-decoration: none;
-        transition: background .4s ease;
-
-        &:hover {
-            background: var(--grey-780);
-        }
-    }
-
-    &__edit {
-        cursor: pointer;
-        display: inline-block;
-        padding: 5px 12px;
-        margin: 5px 10px;
-        border-radius: 5px;
-        background: var(--alert-level-1);
-        color: var(--alert-foreground-900);
-        font-family: var(--theme-font);
-        text-decoration: none;
-        transition: background .4s ease;
-
-        &:hover {
-            background: var(--alert-level-2);
-        }
-    }
 }
 
 .Tab {
-    &__container {
-        display: flex;
-    }
+    align-items: center;
+    justify-content: center;
+    padding: 10px 15px;
+    margin: 5px 5px;
+    border: none;
+    outline: none;
+    color: var(--grey-200);
+    border-radius: 5px;
 
-    &__item {
-        align-items: center;
-        justify-content: center;
-        padding: 10px 15px;
-        margin: 5px 5px;
-        border: none;
-        outline: none;
-        color: var(--grey-200);
-        border-radius: 5px;
-
-        >a {
-            text-decoration: none;
-        }
+    &__unselected {
+        text-decoration: none;
+        color: grey;
+        font-size: 0.8em;
     }
 }
 </style>
@@ -325,16 +278,10 @@ export default {
         },
 
         issuesFiltered() {
-            if (!this.query) { return this.issuesSorted.filter(issue => issue.date.getFullYear() === this.year); }
-            const lowerCaseQuery = this.query.toLowerCase();
             return this.issuesSorted.filter(issue => {
-                return (
-                    (issue.title || '').toLowerCase().includes(lowerCaseQuery) ||
-                    (issue.service || '').toLowerCase().includes(lowerCaseQuery) ||
-                    issue.sources.some(source => {
-                        return source.name.toLowerCase().includes(lowerCaseQuery);
-                    })
-                );
+                return (issue.date.getFullYear() === this.year) &&
+                    (issue.service === this.service || this.service === "All") &&
+                    (this.query === "" || (issue.title || '').toLowerCase().includes(this.query.toLowerCase()));
             });
         },
 
@@ -342,8 +289,8 @@ export default {
             const yearList = this.issues.map(issue => issue.date.getFullYear());
             const yearStart = Math.min(this.year, ...yearList);
             const yearEnd = Math.max(this.year, ...yearList);
-            console.log(yearStart, yearEnd);
-            console.log([...Array(yearEnd - yearStart + 1)]);
+            // console.log(yearStart, yearEnd);
+            // console.log([...Array(yearEnd - yearStart + 1)]);
             return [...Array(yearEnd - yearStart + 1)].map((_, i) => i + yearStart).reverse();
         },
 
@@ -365,38 +312,38 @@ export default {
             return formatDate(date);
         },
 
-        async deleteissue(issue) {
-            if (!confirm(`정말 '${issue.title}'를 삭제하시겠어요?`)) { return; }
-            const result = await api(`/post/${issue.id}`, 'delete');
-            await this.notify(this.$t('delete-issue'), result);
-        },
-
         getIssueURL(issue) {
             return `/issue/${issue.id}`;
         }
     },
 
     async beforeRouteEnter(to, from, next) {
-        const issues = await api('/post');
-        console.log({ issues });
-        issues.forEach(issue => {
-            issue.createdAt = new Date(issue.createdAt);
-            issue.updatedAt = new Date(issue.updatedAt);
-            issue.date = issue.updatedAt;
-        });
-        next(vm => { vm.issues = issues; });
+        try {
+            const issues = await api('/post');
+            issues.forEach(issue => {
+                issue.createdAt = new Date(issue.createdAt);
+                issue.updatedAt = new Date(issue.updatedAt);
+                issue.date = issue.updatedAt;
+            });
+            next(vm => { vm.issues = issues; });
+        } catch (error) {
+            console.error(error);
+        }
     },
 
     async mounted() {
-        const issues = await api('/post');
-        console.log({ issues });
-        issues.forEach(issue => {
-            issue.createdAt = new Date(issue.createdAt);
-            issue.updatedAt = new Date(issue.updatedAt);
-            issue.date = issue.updatedAt;
-        });
-        this.issues = issues;
-        this.year = this.years[0];
+        try {
+            const issues = await api('/post');
+            issues.forEach(issue => {
+                issue.createdAt = new Date(issue.createdAt);
+                issue.updatedAt = new Date(issue.updatedAt);
+                issue.date = issue.updatedAt;
+            });
+            this.issues = issues;
+            this.year = this.years[0];
+        } catch (error) {
+            console.error(error);
+        }
     },
 
     components: {

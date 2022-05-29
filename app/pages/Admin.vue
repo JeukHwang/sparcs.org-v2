@@ -171,12 +171,12 @@
 </style>
 
 <script>
-    import api from "@/src/api";
-
     import AppCheckbox from "@/components/AppCheckbox";
-    import AppForm from "@/components/AppForm";
-    import AppInput from "@/components/AppInput";
-    import AppLink from "@/components/AppLink";
+import AppForm from "@/components/AppForm";
+import AppInput from "@/components/AppInput";
+import AppLink from "@/components/AppLink";
+import api from "@/src/api";
+
 
     export default {
         data() {

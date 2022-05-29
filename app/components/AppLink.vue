@@ -20,59 +20,59 @@
 </template>
 
 <style scoped>
-    .AppLink {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding: 10px 15px;
-        margin: 5px 5px;
+.AppLink {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 15px;
+    margin: 5px 5px;
 
-        border: none;
-        outline: none;
-        color: var(--grey-200);
-        font-family: var(--title-font);
-        font-size: 1.05rem;
-        text-decoration: none;
+    border: none;
+    outline: none;
+    color: var(--grey-200);
+    font-family: var(--title-font);
+    font-size: 1.05rem;
+    text-decoration: none;
 
-        border-radius: 5px;
-        cursor: pointer;
-        background: var(--grey-780);
-        transition: background .4s ease;
+    border-radius: 5px;
+    cursor: pointer;
+    background: var(--grey-780);
+    transition: background .4s ease;
+
+    &:hover {
+        background: var(--grey-800);
+    }
+
+    &>svg {
+        margin: 0 5px;
+        fill: var(--grey-200);
+        stroke: var(--grey-200);
+        height: 1.1rem;
+    }
+
+    & &__icon {
+        height: .8rem;
+        margin-left: 10px;
+        transform: rotate(180deg);
+        transition: transform .4s ease;
+    }
+
+    &:hover &__icon {
+        transform: translateX(5px) rotate(180deg);
+    }
+
+    &&--disabled {
+        cursor: not-allowed;
+        box-shadow: none;
+        background: var(--grey-750);
+        color: var(--grey-650);
 
         &:hover {
-            background: var(--grey-800);
-        }
-
-        & > svg {
-            margin: 0 5px;
-            fill: var(--grey-200);
-            stroke: var(--grey-200);
-            height: 1.1rem;
-        }
-
-        & &__icon {
-            height: .8rem;
-            margin-left: 10px;
-            transform: rotate(180deg);
-            transition: transform .4s ease;
-        }
-
-        &:hover &__icon {
-            transform: translateX(5px) rotate(180deg);
-        }
-
-        &&--disabled {
-            cursor: not-allowed;
-            box-shadow: none;
             background: var(--grey-750);
             color: var(--grey-650);
-
-            &:hover {
-                background: var(--grey-750);
-                color: var(--grey-650);
-            }
         }
     }
+}
 </style>
 
 <script>

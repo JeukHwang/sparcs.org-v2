@@ -74,7 +74,7 @@
 <i18n>
     ko:
         search: '검색'
-        go-back: '뒤로가기'
+        go-back: '돌아가기'
         desc: '스팍스에서 진행되었던 세미나의 발표자료입니다.'
         reverse: '역순'
         delete-seminar: '세미나 삭제'

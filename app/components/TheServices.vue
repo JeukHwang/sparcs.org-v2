@@ -176,16 +176,16 @@
 
 <script>
     import AppLink from "@/components/AppLink";
-    import IconGithub from "@/images/IconGithub?inline";
-    import ServiceAra from "@/images/ServiceAra";
-    import ServiceGeoul from "@/images/ServiceGeoul";
-    import ServiceHome from "@/images/ServiceHome";
-    import ServiceKono from "@/images/ServiceKono";
-    import ServiceNewAra from "@/images/ServiceNewAra";
-    import ServiceOTL from "@/images/ServiceOTL";
-    import ServiceSSO from "@/images/ServiceSSO";
-    import ServiceStatus from "@/images/ServiceStatus";
-    import ServiceZabo from "@/images/ServiceZabo";
+import IconGithub from "@/images/IconGithub?inline";
+import ServiceAra from "@/images/ServiceAra";
+import ServiceGeoul from "@/images/ServiceGeoul";
+import ServiceHome from "@/images/ServiceHome";
+import ServiceKono from "@/images/ServiceKono";
+import ServiceNewAra from "@/images/ServiceNewAra";
+import ServiceOTL from "@/images/ServiceOTL";
+import ServiceSSO from "@/images/ServiceSSO";
+import ServiceStatus from "@/images/ServiceStatus";
+import ServiceZabo from "@/images/ServiceZabo";
 
     export default {
         data() {

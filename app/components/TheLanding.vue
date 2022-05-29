@@ -282,11 +282,11 @@
 </style>
 
 <script>
-    import api from "@/src/api";
-
     import AppLink from "@/components/AppLink";
-    import IconArrow from "@/images/IconArrow?inline";
-    import LandingText from "@/images/LandingText?inline";
+import IconArrow from "@/images/IconArrow?inline";
+import LandingText from "@/images/LandingText?inline";
+import api from "@/src/api";
+
 
     export default {
         data() {

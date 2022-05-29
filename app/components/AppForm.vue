@@ -14,37 +14,39 @@
 </i18n>
 
 <style scoped>
-    .AppForm {
-        & >>> textarea, select {
-            background: var(--grey-800);
-            border: none;
-            border-radius: 5px;
-            padding: 10px 20px;
-            color: var(--grey-200);
-            font-family: var(--theme-font);
-            font-size: .9rem;
-            outline: none;
-        }
+.AppForm {
 
-        & >>> textarea {
-            flex: 1;
-        }
-
-        & >>> label {
-            margin-right: 10px;
-        }
-
-        &__submit {
-            margin: 0;
-            margin-top: 20px;
-        }
+    &>>>textarea,
+    select {
+        background: var(--grey-800);
+        border: none;
+        border-radius: 5px;
+        padding: 10px 20px;
+        color: var(--grey-200);
+        font-family: var(--theme-font);
+        font-size: .9rem;
+        outline: none;
     }
+
+    &>>>textarea {
+        flex: 1;
+    }
+
+    &>>>label {
+        margin-right: 10px;
+    }
+
+    &__submit {
+        margin: 0;
+        margin-top: 20px;
+    }
+}
 </style>
 
 <script>
-    import api from "@/src/api";
-
     import AppLink from "@/components/AppLink";
+import api from "@/src/api";
+
 
     export default {
         props: {

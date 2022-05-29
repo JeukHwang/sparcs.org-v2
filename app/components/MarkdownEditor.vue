@@ -1,11 +1,11 @@
 <template>
     <div class="Editor">
         <div class="Editor__view">
-            <p class="Editor__view__title">Markdown</p>
+            <p class="Editor__view__label">Markdown</p>
             <textarea :value="input" @input="update" class="Editor__view__content Editor__view__md"></textarea>
         </div>
         <div class="Editor__view">
-            <p class="Editor__view__title">Render</p>
+            <p class="Editor__view__label">Render</p>
             <div v-html="compiledMarkdown" class="Editor__view__content Editor__view__render"></div>
         </div>
     </div>
@@ -18,18 +18,17 @@
 
 .Editor {
     display: flex;
+    gap: 20px;
     justify-content: space-between;
     width: 100%;
-    padding: 30px 0px;
+    padding: 10px 0px;
     /* background-color: white; */
 
     &__view {
-        width: 48%;
-        height: calc(1.5em + 70vh);
         display: flex;
         flex-direction: column;
-        -webkit-box-sizing: border-box;
-        -moz-box-sizing: border-box;
+        width: 100%;
+        height: calc(1.5em + 70vh);
 
         &__content {
             width: 100%;
@@ -41,7 +40,7 @@
             overflow: auto;
         }
 
-        &__title {
+        &__label {
             margin: 10px;
             padding: 0;
             height: 1.5em;
@@ -54,6 +53,7 @@
             background-color: #F4F4F4;
             border: none;
             outline: none;
+            resize: none;
         }
 
         &__render {
@@ -69,6 +69,13 @@
 
 ::selection {
     background: #fff9c4;
+}
+
+
+@media (max-width: 700px) {
+    .Editor {
+        flex-direction: column;
+    }
 }
 </style>
 
