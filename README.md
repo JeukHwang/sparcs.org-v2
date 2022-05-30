@@ -33,6 +33,11 @@ alert level 분홍색 색깔?
 color palette 세심한 설정 및 통일할 수 있는 공간이 필요; 실시간으로 바뀐 색깔 확인할 수 있는! - 전용 개발자 도구 제작!, 간단하게 제작 가능 
 linter 통일 필요성, 개인 설정 의존 중인 듯...
 
+markdown editor 더러운 update.... somebody help me!
+
+i18n의 장점을 살려 전역 관리 -> 말투를 일정하게, js에도 쓸 수 있도록
+
+기본 폰트 숫자 표시 이상함; 고정폭이나 align 불가능
 # Specification
 ```
 # Post title

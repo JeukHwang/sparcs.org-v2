@@ -69,7 +69,7 @@
     ko:
         search: '검색'
         go-back: '돌아가기'
-        desc: '스팍스에서 제공하는 서비스에 대한 정보를 확인할 수 있습니다.'
+        desc: '스팍스에서 운영하는 서비스에 대한 정보를 제공하고 있어요'
         reverse: '역순'
         make-issue: '게시글 생성'
 </i18n>
@@ -289,8 +289,6 @@ export default {
             const yearList = this.issues.map(issue => issue.date.getFullYear());
             const yearStart = Math.min(this.year, ...yearList);
             const yearEnd = Math.max(this.year, ...yearList);
-            // console.log(yearStart, yearEnd);
-            // console.log([...Array(yearEnd - yearStart + 1)]);
             return [...Array(yearEnd - yearStart + 1)].map((_, i) => i + yearStart).reverse();
         },
 

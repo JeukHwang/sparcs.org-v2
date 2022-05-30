@@ -21,7 +21,7 @@
                 v-bind:placeholder="$t('write-service')">
         </div>
         <SparcsHr></SparcsHr>
-        <MarkdownEditor v-bind:initialContent="initialContent" @updateContent="updateContent"></MarkdownEditor>
+        <MarkdownEditor v-bind:content="content" @updateContent="updateContent"></MarkdownEditor>
         <AppLink button @click="postIssue">
             {{ $t('make-issue') }}
         </AppLink>
@@ -31,14 +31,14 @@
 <i18n>
     ko:
         go-back: '돌아가기'
-        desc: '스팍스에서 제공하는 서비스에 대한 정보를 확인할 수 있습니다.'
+        desc: '스팍스에서 제공하는 서비스에 대한 정보를 확인할 수 있어요'
         reverse: '역순'
         delete-issue: '게시글 삭제'
         make-issue: '게시글 생성'
         title: '제목'
         service: '서비스'
-        write-title: '제목을 입력하세요'
-        write-service: '서비스를 입력하세요'
+        write-title: '제목을 입력해주세요'
+        write-service: '서비스를 입력해주세요'
         edit-post: '게시글 수정'
 </i18n>
 
@@ -123,10 +123,9 @@ export default {
 
     methods: {
         updateContent(content) {
-            console.log("Parent update", content);
             this.content = content;
         },
-        
+
         getIssueData: function () {
             const data = {
                 title: this.title.trim(),
@@ -149,30 +148,32 @@ export default {
                 for (const [errorExists, msg] of errorDict) {
                     if (errorExists) { alert(msg); return; }
                 }
-                const response = await api("post", "put", issueData);
-                console.log(response);
-                window.location.href = `/issue/${response.id}`;
+                const response = await api(`/post/${this.postID}`, "post", issueData);
+                console.log({issueData, response});
+                window.location.href = `/issue/${this.postID}`;
             } catch (error) {
-                alert(error); // TODO toast msg
+                alert("오류로 인해 수정된 게시글을 저장할 수 없어요");
                 console.error(error);
             }
-            console.log(this.getIssueData());
         }
     },
 
     async mounted() {
         // TODO api error handling?
         try {
+            if (parseInt(this.postID) === NaN) {
+                alert("게시글이 존재하지 않아요");
+                window.location.href = "/issues"; return;
+            }
             const issue = await api(`/post/${this.postID}`, "get");
             issue.date = issue.updatedAt;
             this.title = issue.title;
             this.selectedService = issue.service;
             this.content = issue.content;
-            this.initialContent = issue.content;
         } catch (error) {
             console.error(error);
-            alert("게시글이 존재하지 않거나 오류가 생겨 현재 게시글을 불러올 수 없습니다");
-            window.location.href = "/404"; return;
+            alert("오류로 인해 게시글을 불러올 수 없어요");
+            window.location.href = "/issues"; return;
         }
     },
 

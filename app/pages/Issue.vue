@@ -10,12 +10,12 @@
         <span> {{ updatedAt }} 수정 </span>
         <!-- <template v-if="authLogin"> -->
         <div class="button">
-            <a @click="editissue()"> {{ $t('edit-issue') }} </a>
+            <a @click="editIssue()"> {{ $t('edit-issue') }} </a>
         </div>
         <!-- </template> -->
         <!-- <template v-if="issue.canEdit"> -->
         <div class="button">
-            <a @click="deleteissue()"> {{ $t('delete-issue') }} </a>
+            <a @click="deleteIssue()"> {{ $t('delete-issue') }} </a>
         </div>
         <!-- </template> -->
 
@@ -89,14 +89,15 @@ export default {
             return formatDate(date);
         },
 
-        async editissue() {
+        async editIssue() {
             window.location.href = `/issue/${this.postID}/edit`;
         },
 
-        async deleteissue() {
+        async deleteIssue() {
             // TODO hardcoded string
-            if (!confirm(`삭제하기 전에 고민했나요? 삭제는 되돌릴 수 없는 행동이에요`)) { return; }
+            if (!confirm(`삭제하기 전에 고민했나요?\n삭제는 되돌릴 수 없는 행동이에요`)) { return; }
             const result = await api(`/post/${this.postID}`, 'delete');
+            console.log(result);
             // await this.notify(this.$t('delete-issue'), result);
         },
     },
@@ -104,6 +105,10 @@ export default {
     async mounted() {
         // TODO api error handling?
         try {
+            if (parseInt(this.postID) === NaN) {
+                alert("게시글이 존재하지 않아요");
+                window.location.href = "/issues"; return;
+            }
             const issue = await api(`/post/${this.postID}`, "get");
             issue.createdAt = formatDate(new Date(issue.createdAt));
             issue.updatedAt = formatDate(new Date(issue.updatedAt));
@@ -111,14 +116,8 @@ export default {
             ['title', 'service', 'createdAt', 'updatedAt', 'content'].forEach(prop => this[prop] = issue[prop]);
         } catch (error) {
             console.error(error);
-            alert("게시글이 존재하지 않거나 오류가 생겨 현재 게시글을 불러올 수 없습니다");
-            window.location.href = "/404"; return;
-        }
-    },
-
-    created() {
-        if (parseInt(this.postID) === NaN) {
-            window.location.href = "/404"; return;
+            alert("오류로 인해 게시글을 불러올 수 없어요");
+            window.location.href = "/issues"; return;
         }
     },
 

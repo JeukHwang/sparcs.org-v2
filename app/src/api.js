@@ -25,13 +25,8 @@ const request = async (url, method = 'get', body = null, options = null) => {
             return {};
         case "auth/login":
             response = await api(configuration);
-            if (response.status == 200) {
-                console.log("response", response, response["set-cookie"]);
-                const token = localStorage.setItem('connect.sid', response);
-                return true;
-            } else {
-                return false;
-            }
+            console.log({ response });
+            return response.status === 200;
         default:
             response = await api(configuration);
             if (response.status !== 200) {

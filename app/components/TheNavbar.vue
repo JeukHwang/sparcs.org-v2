@@ -250,8 +250,9 @@ import api from "@/src/api";
 
         methods: {
             async login() {
-                const { url } = await api('/auth', 'post');
-                location.href = url;
+                // const { url } = await api('/auth', 'post');
+                // location.href = url;
+                window.location.href = "/login";
             },
 
             async logout() {

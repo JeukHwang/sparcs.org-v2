@@ -99,13 +99,13 @@ export default {
         login: async function () {
             try {
                 const loginData = { username: this.id, password: this.pw };
-                console.log({ loginData });
-                const response = await api("auth/login", "post", loginData);
-                console.log(response);
-                // window.location.href = `/`;
+                const response = await api("/auth/login", "post", loginData);
+                console.log({ loginData, response });
+                // window.location.href = `/status`;
+                this.$router.back(1);
             } catch (error) {
-                console.error("Error"); // server or client
-                alert(error); // TODO toast msg
+                alert("오류로 인해 사용자를 인증할 수 없어요");
+                console.error(error);
             }
         }
     },

@@ -2,7 +2,8 @@
     <div class="Editor">
         <div class="Editor__view">
             <p class="Editor__view__label">Markdown</p>
-            <textarea v-bind:value="content" @input="updateContent" class="Editor__view__content Editor__view__md"></textarea>
+            <textarea v-bind:value="content" @input="updateContent"
+                class="Editor__view__content Editor__view__md"></textarea>
         </div>
         <div class="Editor__view">
             <p class="Editor__view__label">Render</p>
@@ -71,7 +72,6 @@
     background: #fff9c4;
 }
 
-
 @media (max-width: 700px) {
     .Editor {
         flex-direction: column;
@@ -83,18 +83,15 @@
 import { marked } from "marked";
 
 export default {
-    // props: {
-    //     initialContent: {
-    //         type: String,
-    //         required: false
-    //     }
-    // },
-
-    props: ["initialContent"],
+    props: {
+        content: {
+            type: String,
+            required: true
+        },
+    },
 
     data: function () {
         return {
-            content: "",
             debounce: null,
             force: 0,
         };
@@ -108,19 +105,12 @@ export default {
 
     methods: {
         updateContent(e) {
-            console.log("Update?", e.target.value);
             if (this.debounce !== null) { clearTimeout(this.debounce); }
             this.debounce = setTimeout(function () {
                 this.debounce = null;
-                this.content = e.target.value;
                 this.$emit('updateContent', e.target.value);
             }.bind(this), 1000);
         },
     },
-
-    mounted() {
-        console.log(this.initialContent, typeof this.initialContent);
-        this.content = this.initialContent;
-    }
 };
 </script>

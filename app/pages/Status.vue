@@ -4,7 +4,7 @@
             <IconArrow class="App__back__icon" />{{ $t('go-back') }}
         </router-link>
         <h1 class="Tab">Status | <a class="Tab__unselected" href="./issues">Issues</a></h1>
-        <p class="Info__desc">{{ $t('status-desc') }}</p>
+        <p class="Info__desc">{{ $t('desc') }}</p>
 
         <div class="Grid__container">
             <div class="Grid__item Service" v-for="service in services" :key="service.name">
@@ -25,10 +25,8 @@
     ko:
         search: '검색'
         go-back: '돌아가기'
-        status-desc: '스팍스에서 제공하는 서비스의 상태를 실시간으로 확인할 수 있습니다.'
-        issues-desc: '스팍스에서 제공하는 서비스에 대한 정보를 확인할 수 있습니다.'
+        desc: '스팍스에서 운영하는 서비스의 상태를 실시간으로 알려드려요.'
         reverse: '역순'
-        delete-issue: '세미나 삭제'
 </i18n>
 
 <style scoped>
@@ -256,15 +254,13 @@ export default {
     },
 
     mounted() {
-        console.log('Mounted');
         let eventSource = new EventSource('http://3.39.230.113:3000/status/info');
         eventSource.onopen = (event) => { console.log("Connected"); };
         eventSource.onmessage = (event) => {
             let data = JSON.parse(event.data);
-            console.log('Mounted data', data);
+            // console.log({data});
             this.services.forEach((s) => {
                 let name = s.name.toLowerCase();
-                console.log(name, data[name], data);
                 switch (data[name]) {
                     case "operational":
                         s.tags = ["Operational"];
@@ -296,23 +292,6 @@ export default {
             console.error('eventsourceError', event);
             eventSource.close();
         };
-    },
-
-    computed: {
-        columns() {
-            // TODO : is the order written in the code hard-coding priority? otherwise let's sort by service name
-            // this.services.sort((a, b) => (a.name < b.name) ? -1 : ((a.name > b.name) ? 1 : 0));
-
-            // TODO : Can I used flex-wrap to solve it?
-            const cols = 2;
-            let columns = [];
-            let mid = Math.ceil(this.services.length / cols);
-            for (let col = 0; col < cols; col++) {
-                columns.push(this.services.slice(col * mid, (col + 1) * mid));
-            }
-            console.log(columns);
-            return columns;
-        }
     },
 
     methods: {

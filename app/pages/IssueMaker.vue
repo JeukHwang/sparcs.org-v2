@@ -8,7 +8,7 @@
         <div class="LabeledInput__flex">
             <p class="LabeledInput__label"> {{ $t('title') }} </p>
             <input class="LabeledInput__box LabeledInput__textbox" type="text" required
-                v-bind:placeholder="$t('write-title')" v-model="writtenTitle">
+                v-bind:placeholder="$t('write-title')" v-model="title">
         </div>
         <div class="LabeledInput__flex">
             <p class="LabeledInput__label"> {{ $t('service') }} </p>
@@ -21,7 +21,7 @@
                 v-bind:placeholder="$t('write-service')">
         </div>
         <SparcsHr></SparcsHr>
-        <MarkdownEditor ref="mdEditor"></MarkdownEditor>
+        <MarkdownEditor v-bind:content="content" @updateContent="updateContent"></MarkdownEditor>
         <AppLink button @click="postIssue">
             {{ $t('make-issue') }}
         </AppLink>
@@ -32,8 +32,6 @@
     ko:
         search: '검색'
         go-back: '돌아가기'
-        desc: '스팍스에서 제공하는 서비스에 대한 정보를 확인할 수 있습니다.'
-        reverse: '역순'
         delete-issue: '게시글 삭제'
         make-issue: '게시글 생성'
         title: '제목'
@@ -115,17 +113,21 @@ export default {
                 'Kono', 'NewAra', 'OTL',
                 'SSO', 'status', 'Zabo', 'Other'],
             selectedService: "Ara",
-            writtenTitle: "",
+            title: "",
             content: ""
         };
     },
 
     methods: {
+        updateContent: function(content) {
+            this.content = content;
+        },
+
         getIssueData: function () {
             const data = {
-                title: this.writtenTitle.trim(),
+                title: this.title.trim(),
                 service: this.selectedService !== "Other" ? this.selectedService : document.getElementById("customService").value.trim(),
-                content: this.$refs.mdEditor.input.trim()
+                content: this.content.trim()
             };
             return data;
         },
@@ -144,13 +146,12 @@ export default {
                     if (errorExists) { alert(msg); return; }
                 }
                 const response = await api("post", "put", issueData);
-                console.log(response);
+                console.log({issueData, response});
                 window.location.href = `/issue/${response.id}`;
             } catch (error) {
-                alert(error); // TODO toast msg
+                alert("오류로 인해 작성된 게시글을 저장할 수 없어요");
                 console.error(error);
             }
-            console.log(this.getIssueData());
         }
     },
 
