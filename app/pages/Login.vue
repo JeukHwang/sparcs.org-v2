@@ -12,7 +12,7 @@
         </div>
         <div class="LabeledInput__flex">
             <p class="LabeledInput__label"> {{ $t('pw') }} </p>
-            <input class="LabeledInput__box LabeledInput__textbox" type="text" required
+            <input class="LabeledInput__box LabeledInput__textbox" type="password" required
                 v-bind:placeholder="$t('write-pw')" v-model="pw">
         </div>
         <AppLink button @click="login">
@@ -98,11 +98,11 @@ export default {
     methods: {
         login: async function () {
             try {
-                const loginData = { id: this.id, pw: this.pw };
+                const loginData = { username: this.id, password: this.pw };
                 console.log({ loginData });
-                const response = await api("login", "put", loginData);
+                const response = await api("auth/login", "post", loginData);
                 console.log(response);
-                window.location.href = `/`;
+                // window.location.href = `/`;
             } catch (error) {
                 console.error("Error"); // server or client
                 alert(error); // TODO toast msg

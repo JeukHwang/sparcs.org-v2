@@ -13,22 +13,27 @@ const request = async (url, method = 'get', body = null, options = null) => {
         headers: {},
         ...options
     };
+    response = await api(configuration);
 
-    const token = localStorage.getItem('SparcsAuthorization');
-    if (token)
-        configuration.headers['Sparcs-Authorization'] = token;
+    // const token = localStorage.getItem('connect.sid');
+    // if (token) { configuration.headers['Cookie'] = `connect.sid=${token}`; }
+    if (body) { configuration.data = body; }
 
-    if (body) {
-        configuration.data = body;
-    }
-
+    let response;
     switch (url) {
         case "/auth":
-            // const { data } = await authApi(configuration);
-            // return data;
             return {};
+        case "auth/login":
+            response = await api(configuration);
+            if (response.status == 200) {
+                console.log("response", response, response["set-cookie"]);
+                const token = localStorage.setItem('connect.sid', response);
+                return true;
+            } else {
+                return false;
+            }
         default:
-            const response = await api(configuration);
+            response = await api(configuration);
             if (response.status !== 200) {
                 console.error(response);
                 throw Error;

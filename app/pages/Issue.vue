@@ -10,12 +10,12 @@
         <span> {{ updatedAt }} 수정 </span>
         <!-- <template v-if="authLogin"> -->
         <div class="button">
-            <a @click="editissue(issue)"> {{ $t('edit-issue') }} </a>
+            <a @click="editissue()"> {{ $t('edit-issue') }} </a>
         </div>
         <!-- </template> -->
         <!-- <template v-if="issue.canEdit"> -->
         <div class="button">
-            <a @click="deleteissue(issue)"> {{ $t('delete-issue') }} </a>
+            <a @click="deleteissue()"> {{ $t('delete-issue') }} </a>
         </div>
         <!-- </template> -->
 
@@ -28,8 +28,8 @@
 <i18n>
     ko:
         go-back: '돌아가기'
-        delete-issue: '글 삭제'
-        edit-issue: '글 수정'
+        delete-issue: '게시글 삭제'
+        edit-issue: '게시글 수정'
 </i18n>
 
 <style scoped>
@@ -66,10 +66,10 @@
 
 <script>
 import MarkdownViewer from "@/components/MarkdownViewer";
+import SparcsHr from "@/components/SparcsHr.vue";
 import IconArrow from "@/images/IconArrow?inline";
 import api from "@/src/api";
 import formatDate from "@/src/formatDate";
-import SparcsHr from "@/components/SparcsHr.vue";
 
 export default {
     data() {
@@ -89,15 +89,15 @@ export default {
             return formatDate(date);
         },
 
-        async editissue(issue) {
-            window.location.href = `/issue/${issue.id}/edit`;
+        async editissue() {
+            window.location.href = `/issue/${this.postID}/edit`;
         },
 
-        async deleteissue(issue) {
+        async deleteissue() {
             // TODO hardcoded string
             if (!confirm(`삭제하기 전에 고민했나요? 삭제는 되돌릴 수 없는 행동이에요`)) { return; }
-            const result = await api(`/post/${issue.id}`, 'delete');
-            await this.notify(this.$t('delete-issue'), result);
+            const result = await api(`/post/${this.postID}`, 'delete');
+            // await this.notify(this.$t('delete-issue'), result);
         },
     },
 
@@ -111,6 +111,14 @@ export default {
             ['title', 'service', 'createdAt', 'updatedAt', 'content'].forEach(prop => this[prop] = issue[prop]);
         } catch (error) {
             console.error(error);
+            alert("게시글이 존재하지 않거나 오류가 생겨 현재 게시글을 불러올 수 없습니다");
+            window.location.href = "/404"; return;
+        }
+    },
+
+    created() {
+        if (parseInt(this.postID) === NaN) {
+            window.location.href = "/404"; return;
         }
     },
 

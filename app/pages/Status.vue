@@ -130,7 +130,7 @@ a {
     color: var(--grey-200);
     border-radius: 5px;
 
-    &__unselected{
+    &__unselected {
         text-decoration: none;
         color: grey;
         font-size: 0.8em;
@@ -247,9 +247,7 @@ export default {
                 }
             ]
                 .map(service => {
-                    if (!service.tags) {
-                        service.tags = [""];
-                    }
+                    service.tags = ["Loading..."];
                     return service;
                 })
             ,
@@ -259,30 +257,45 @@ export default {
 
     mounted() {
         console.log('Mounted');
-        this.services.forEach((service) => {
-            let name = service.name.toLowerCase();
-            console.log(name, service.tags);
-            if (!service.tags) { service.tags = [""]; }
-            // Hard-coding
-            let eventSource = new EventSource('http://3.39.230.113:3000/status/random');
-            eventSource.onopen = (event) => {
-                console.log("Connected");
-            };
-
-            eventSource.onmessage = (event) => {
-                let data = JSON.parse(event.data);
-                if (data.opertional) {
-                    service.tags = ["Operational"];
-                } else {
-                    service.tags = ["Inoperational", data.msg, "로그인 비작동", "DB 저장용량 부족", "일부 Android 기기 속도 지연"];
+        let eventSource = new EventSource('http://3.39.230.113:3000/status/info');
+        eventSource.onopen = (event) => { console.log("Connected"); };
+        eventSource.onmessage = (event) => {
+            let data = JSON.parse(event.data);
+            console.log('Mounted data', data);
+            this.services.forEach((s) => {
+                let name = s.name.toLowerCase();
+                console.log(name, data[name], data);
+                switch (data[name]) {
+                    case "operational":
+                        s.tags = ["Operational"];
+                        break;
+                    case "inoperational":
+                        s.tags = ["Inoperational"];
+                        break;
+                    default:
+                        s.tags = ["Unknown"];
+                        break;
                 }
-                this.updateForce();
-            };
-
-            eventSource.onerror = (event) => {
-                eventSource.close();
-            };
-        });
+                if (name === "ara") { // Just for presentation
+                    switch (data["random"]) {
+                        case "operational":
+                            s.tags = ["Operational"];
+                            break;
+                        case "inoperational":
+                            s.tags = ["Inoperational"];
+                            break;
+                        default:
+                            s.tags = ["Unknown"];
+                            break;
+                    }
+                }
+            });
+            this.updateForce();
+        };
+        eventSource.onerror = (event) => {
+            console.error('eventsourceError', event);
+            eventSource.close();
+        };
     },
 
     computed: {

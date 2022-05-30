@@ -4,11 +4,11 @@
             <IconArrow class="App__back__icon" />
             {{ $t('go-back') }}
         </router-link>
-        <h1 class="App__title">{{ $t('make-post') }}</h1>
+        <h1 class="App__title">{{ $t('edit-post') }}</h1>
         <div class="LabeledInput__flex">
             <p class="LabeledInput__label"> {{ $t('title') }} </p>
             <input class="LabeledInput__box LabeledInput__textbox" type="text" required
-                v-bind:placeholder="$t('write-title')" v-model="writtenTitle">
+                v-bind:placeholder="$t('write-title')" v-model="title">
         </div>
         <div class="LabeledInput__flex">
             <p class="LabeledInput__label"> {{ $t('service') }} </p>
@@ -21,7 +21,7 @@
                 v-bind:placeholder="$t('write-service')">
         </div>
         <SparcsHr></SparcsHr>
-        <MarkdownEditor ref="mdEditor"></MarkdownEditor>
+        <MarkdownEditor v-bind:initialContent="initialContent" @updateContent="updateContent"></MarkdownEditor>
         <AppLink button @click="postIssue">
             {{ $t('make-issue') }}
         </AppLink>
@@ -30,7 +30,6 @@
 
 <i18n>
     ko:
-        search: '검색'
         go-back: '돌아가기'
         desc: '스팍스에서 제공하는 서비스에 대한 정보를 확인할 수 있습니다.'
         reverse: '역순'
@@ -40,7 +39,7 @@
         service: '서비스'
         write-title: '제목을 입력하세요'
         write-service: '서비스를 입력하세요'
-        make-post: '게시글 작성'
+        edit-post: '게시글 수정'
 </i18n>
 
 <style scoped>
@@ -111,21 +110,28 @@ import api from '@/src/api';
 export default {
     data() {
         return {
+            postID: this.$route.params.id,
             services: ['Ara', 'Geoul', 'Home',
                 'Kono', 'NewAra', 'OTL',
                 'SSO', 'status', 'Zabo', 'Other'],
             selectedService: "Ara",
-            writtenTitle: "",
-            content: ""
+            title: "",
+            content: "",
+            initialContent: ""
         };
     },
 
     methods: {
+        updateContent(content) {
+            console.log("Parent update", content);
+            this.content = content;
+        },
+        
         getIssueData: function () {
             const data = {
-                title: this.writtenTitle.trim(),
+                title: this.title.trim(),
                 service: this.selectedService !== "Other" ? this.selectedService : document.getElementById("customService").value.trim(),
-                content: this.$refs.mdEditor.input.trim()
+                content: this.content.trim()
             };
             return data;
         },
@@ -151,6 +157,22 @@ export default {
                 console.error(error);
             }
             console.log(this.getIssueData());
+        }
+    },
+
+    async mounted() {
+        // TODO api error handling?
+        try {
+            const issue = await api(`/post/${this.postID}`, "get");
+            issue.date = issue.updatedAt;
+            this.title = issue.title;
+            this.selectedService = issue.service;
+            this.content = issue.content;
+            this.initialContent = issue.content;
+        } catch (error) {
+            console.error(error);
+            alert("게시글이 존재하지 않거나 오류가 생겨 현재 게시글을 불러올 수 없습니다");
+            window.location.href = "/404"; return;
         }
     },
 

@@ -2,7 +2,7 @@
     <div class="Editor">
         <div class="Editor__view">
             <p class="Editor__view__label">Markdown</p>
-            <textarea :value="input" @input="update" class="Editor__view__content Editor__view__md"></textarea>
+            <textarea v-bind:value="content" @input="updateContent" class="Editor__view__content Editor__view__md"></textarea>
         </div>
         <div class="Editor__view">
             <p class="Editor__view__label">Render</p>
@@ -83,64 +83,44 @@
 import { marked } from "marked";
 
 export default {
-    data() {
+    // props: {
+    //     initialContent: {
+    //         type: String,
+    //         required: false
+    //     }
+    // },
+
+    props: ["initialContent"],
+
+    data: function () {
         return {
-            input: `\
-# Post title
-## Issue
-- Type : Unexpected issue, Scheduled maintenance, ...
-- When : 2022.05.16 03:50
-- What : Login form does not work
-
-## Update
-- When : 2022.05.16 04:00
-- What : Hotfix for network frontend bug
-
-## Update
-- When : 2022.05.16 05:50
-- What : Refactoring hotfix update
-
-## Monitoring
-- When : 2022.05.17 12:30
-- What : back to normal, currently monitoring
-
-## Resolved
-- When : 2022.05.18 14:00
-- What : Login form works
-
-## Reflection
-- When : 2022.05.18 15:00
-
-### Why issue happen?
-- Poor unit test
-- miscommunication during code review
-
-### How to prevent?
-- Force unit test by blocking commit without it
-- Automate unit test
-- Make documentation for code reviewers
-- Write the result of code review in Github
-- Make slack notifier that shows reviewer's comment 
-    - [Related slack official docs](https://slack.com/intl/ko-kr/help/articles/115005265703)\
-`,
+            content: "",
             debounce: null,
+            force: 0,
         };
     },
 
     computed: {
         compiledMarkdown: function () {
-            return marked(this.input);
+            return marked(this.content);
         },
     },
 
     methods: {
-        update: function (e) {
+        updateContent(e) {
+            console.log("Update?", e.target.value);
             if (this.debounce !== null) { clearTimeout(this.debounce); }
             this.debounce = setTimeout(function () {
-                this.input = e.target.value;
                 this.debounce = null;
+                this.content = e.target.value;
+                this.$emit('updateContent', e.target.value);
             }.bind(this), 1000);
-        }
+        },
+    },
+
+    mounted() {
+        console.log(this.initialContent, typeof this.initialContent);
+        this.content = this.initialContent;
     }
 };
 </script>

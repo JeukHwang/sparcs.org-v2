@@ -57,7 +57,7 @@
             </div>
         </div>
 
-        <AppLink to="/issue/make">
+        <AppLink to="/issues/make">
             {{ $t('make-issue') }}
         </AppLink>
 
@@ -71,7 +71,7 @@
         go-back: '돌아가기'
         desc: '스팍스에서 제공하는 서비스에 대한 정보를 확인할 수 있습니다.'
         reverse: '역순'
-        make-issue: '글 생성'
+        make-issue: '게시글 생성'
 </i18n>
 
 <style scoped>

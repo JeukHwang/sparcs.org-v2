@@ -1,6 +1,7 @@
 import Admin from "@/pages/Admin.vue";
 import Index from "@/pages/Index.vue";
 import Issue from "@/pages/Issue.vue";
+import IssueEditor from "@/pages/IssueEditor.vue";
 import IssueMaker from "@/pages/IssueMaker.vue";
 import Issues from "@/pages/Issues.vue";
 import Login from "@/pages/Login.vue";
@@ -23,10 +24,10 @@ export default new VueRouter({
         { name: 'Seminars', path: '/seminars', component: Seminars },
         { name: 'Status', path: '/status', component: Status },
         { name: 'Issues', path: '/issues', component: Issues },
-        { name: 'IssueMaker', path: '/issue/make', component: IssueMaker },
+        { name: 'IssueMaker', path: '/issues/make', component: IssueMaker },
         { name: 'Issue', path: '/issue/:id', component: Issue },
+        { name: 'IssueEditor', path: '/issue/:id/edit', component: IssueEditor },
         { name: 'NotFound', path: '*', component: NotFound },
-
     ],
 
     mode: 'history',
