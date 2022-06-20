@@ -60,8 +60,6 @@
         <AppLink to="/issues/make">
             {{ $t('make-issue') }}
         </AppLink>
-
-        <TheSeminarUpload v-if="authState" />
     </div>
 </template>
 
@@ -256,6 +254,10 @@ export default {
     },
 
     computed: {
+        // authState() {
+        //     return localStorage.getItem("isLogin");
+        // },
+        
         admin() {
             if (!this.$store.state.auth.user) { return false; }
             return this.$store.state.auth.user.admin;
@@ -294,10 +296,6 @@ export default {
 
         services() {
             return ["All", ...new Set(this.issues.map(issue => issue.service))].sort();
-        },
-
-        authState() {
-            return this.$store.getters['auth/authState'];
         },
     },
 

@@ -8,11 +8,11 @@
         <span> {{ service }} 작성 </span> /
         <span> {{ createdAt }} 입력 </span> /
         <span> {{ updatedAt }} 수정 </span>
-        <!-- <template v-if="authLogin"> -->
+        <template v-if="authState">
         <div class="button">
             <a @click="editIssue()"> {{ $t('edit-issue') }} </a>
         </div>
-        <!-- </template> -->
+        </template>
         <!-- <template v-if="issue.canEdit"> -->
         <div class="button">
             <a @click="deleteIssue()"> {{ $t('delete-issue') }} </a>
@@ -98,7 +98,19 @@ export default {
             if (!confirm(`삭제하기 전에 고민했나요?\n삭제는 되돌릴 수 없는 행동이에요`)) { return; }
             const result = await api(`/post/${this.postID}`, 'delete');
             console.log(result);
+            window.locaiton.href = "/issues";
             // await this.notify(this.$t('delete-issue'), result);
+        },
+
+        async authState() {
+            console.log("authState");
+            try {
+                const response = await api('auth/loginstatus', "get");
+                console.log({ response });
+                return response === "true";
+            } catch (e) {
+                return false;
+            }
         },
     },
 

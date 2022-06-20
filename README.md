@@ -99,3 +99,5 @@ VERY GOOD refence : https://studiomeal.com/archives/533
 very good 구문 : `grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));`
 
 parent, child 간 좋은 형태의 통신! : https://whitepro.tistory.com/255
+
+api() 에 대한 try catch는 일관성이 없어서 logic 제대로 확인한 이후 수정 필요

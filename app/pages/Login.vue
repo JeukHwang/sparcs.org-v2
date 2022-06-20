@@ -102,6 +102,7 @@ export default {
                 const response = await api("/auth/login", "post", loginData);
                 console.log({ loginData, response });
                 // window.location.href = `/status`;
+                localStorage.setItem("isLogin", true);
                 this.$router.back(1);
             } catch (error) {
                 alert("오류로 인해 사용자를 인증할 수 없어요");

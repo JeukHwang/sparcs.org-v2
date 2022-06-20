@@ -109,7 +109,7 @@ export default {
             this.debounce = setTimeout(function () {
                 this.debounce = null;
                 this.$emit('updateContent', e.target.value);
-            }.bind(this), 1000);
+            }.bind(this), 300);
         },
     },
 };
